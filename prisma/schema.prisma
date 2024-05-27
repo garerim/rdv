@@ -1,17 +1,201 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-generator client {
-  provider = "prisma-client-js"
-}
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id       Int      @id @default(autoincrement())
-  email    String   @unique
-  name     String?
+generator client {
+  provider = "prisma-client-js"
+}
+
+model UserProfile {
+  id                 Int       @id @default(autoincrement())
+  firstName          String
+  lastName           String
+  email              String    @unique
+  password           String
+  birthDate          DateTime
+  activated          Boolean   @default(false)
+  secretToken        String?
+  role               String
+  sexe               String?
+  addressGouvernerat String?
+  addressVille       String?
+  addressCite        String?
+  telephoneMobile    String[]
+  telephoneFix       String[]
+  diplome            String[]
+  imageDiplome       String?
+  rating             Float?
+  domainePrincipal   String?
+  domaineSecondaires String[]
+  abonnes            UserProfile[] @relation("UserProfileAbonnes")
+  abonneDe           UserProfile[] @relation("UserProfileAbonnes")
+  socialYoutube      String?
+  socialTwitter      String?
+  socialFacebook     String?
+  socialLinkedin     String?
+  socialInstagram    String?
+  date               DateTime  @default(now())
+  cv                 String?
+  description        String?
+  metier             String?
+  tags               String[]
+  avatar             String?
+  available          Available[]
+  prixPcr            Float?
+  video              String?
+  reviews            Review[]
+  nbyes              Int?
+  nbno               Int?
+
+  devisProfessionel  Devis[] @relation("DevisProfessionel")
+  devisPatient       Devis[] @relation("DevisPatient")
+  notificationProfessionel Notification[] @relation("NotificationProfessionel")
+  notificationPatient Notification[] @relation("NotificationPatient")
+  notificationSender Notification[] @relation("NotificationSender")
+  notificationReciever Notification[] @relation("NotificationReciever")
+  post               Post[]
+  postLike           PostLike[]
+  postComment        PostComment[]
+  rendezVousProfessionel RendezVous[] @relation("RendezVousProfessionel")
+  rendezVousPatient  RendezVous[] @relation("RendezVousPatient")
+  reviewComment      ReviewComment[]
+}
+
+model Devis {
+  id             Int       @id @default(autoincrement())
+  professionelId Int
+  patientId      Int
+  appointmentId  Int
+  prixAvantTva   Float
+  tva            Float
+  prixFinal      Float
+
+  professionel   UserProfile @relation("DevisProfessionel", fields: [professionelId], references: [id])
+  patient        UserProfile @relation("DevisPatient", fields: [patientId], references: [id])
+  appointment    RendezVous  @relation(fields: [appointmentId], references: [id])
+}
+
+model Notification {
+  id             Int       @id @default(autoincrement())
+  professionelId Int
+  patientId      Int
+  senderId       Int
+  recieverId     Int
+  rendezVousId   Int
+  etat           String
+  title          String
+  date           DateTime  @default(now())
+
+  professionel   UserProfile @relation("NotificationProfessionel", fields: [professionelId], references: [id])
+  patient        UserProfile @relation("NotificationPatient", fields: [patientId], references: [id])
+  sender         UserProfile @relation("NotificationSender", fields: [senderId], references: [id])
+  reciever       UserProfile @relation("NotificationReciever", fields: [recieverId], references: [id])
+  rendezVous     RendezVous  @relation(fields: [rendezVousId], references: [id])
+}
+
+model Post {
+  id      Int      @id @default(autoincrement())
+  userId  Int
+  text    String
+  likes   PostLike[]
+  comments PostComment[]
+  date    DateTime @default(now())
+  type    String   @default("text")
+
+  user    UserProfile @relation(fields: [userId], references: [id])
+}
+
+model PostLike {
+  id      Int      @id @default(autoincrement())
+  userId  Int
+  postId  Int
+
+  user    UserProfile @relation(fields: [userId], references: [id])
+  post    Post        @relation(fields: [postId], references: [id])
+}
+
+model PostComment {
+  id      Int      @id @default(autoincrement())
+  userId  Int
+  postId  Int
+  text    String
+  date    DateTime @default(now())
+
+  user    UserProfile @relation(fields: [userId], references: [id])
+  post    Post        @relation(fields: [postId], references: [id])
+}
+
+model RendezVous {
+  id               Int      @id @default(autoincrement())
+  professionelId   Int
+  patientId        Int
+  startDate        DateTime
+  endDate          DateTime
+  etat             String
+  typeRendezVous   String
+  description      String
+  prix             Float
+  idevent          Int
+  fichierJoint     String
+
+  professionel     UserProfile @relation("RendezVousProfessionel", fields: [professionelId], references: [id])
+  patient          UserProfile @relation("RendezVousPatient", fields: [patientId], references: [id])
+
+  devis            Devis[]
+  notifications    Notification[]
+}
+
+model Available {
+  id               Int      @id @default(autoincrement())
+  userProfileId    Int
+  startDate        DateTime
+  endDate          DateTime
+
+  userProfile      UserProfile @relation(fields: [userProfileId], references: [id])
+}
+
+model Review {
+  id               Int      @id @default(autoincrement())
+  userProfileId    Int
+  description      String
+  comments         ReviewComment[]
+  date             DateTime @default(now())
+  type             String
+  nbyes            Int?
+  nbno             Int?
+
+  userProfile      UserProfile @relation(fields: [userProfileId], references: [id])
+}
+
+model ReviewComment {
+  id               Int      @id @default(autoincrement())
+  userId           Int
+  reviewId         Int
+  text             String
+  date             DateTime @default(now())
+
+  user             UserProfile @relation(fields: [userId], references: [id])
+  review           Review      @relation(fields: [reviewId], references: [id])
+}
+
+model Message {
+  id               Int      @id @default(autoincrement())
+  created          DateTime
+  from             String
+  text             String
+  conversationId   Int
+
+  conversation     Conversation @relation(fields: [conversationId], references: [id])
+}
+
+model Conversation {
+  id               Int      @id @default(autoincrement())
+  participants     Json[]
+  name             String
+
+  messages         Message[]
 }
