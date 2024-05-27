@@ -1,10 +1,9 @@
-import { ThemeToggle } from "@/components/theme-toggle";
+'use client'
 
 export default function Home() {
   return (
-    <main>
-      Hello World
-      <ThemeToggle />
-    </main>
+    <div className="absolute top-[5vh] w-full">
+      
+    </div>
   );
 }
