@@ -93,6 +93,52 @@ model UserProfile {
   conversationsCrees       Conversation[]  @relation("MembreCreateur")
   conversationsRejointes   Conversation[]  @relation("MembreSuiveur")
   userLikes                ReviewLike[]
+  Antecedents              Antecedent[]
+  SuiviPatient             Suivi[]         @relation("PatientProfile")
+  SuiviMedecin             Suivi[]         @relation("MedecinProfile")
+}
+
+model Antecedent {
+  id             String         @id @default(uuid())
+  userProfileId  String
+  type           TypeAntecedent
+  details        String
+  dateAntecedent DateTime
+  nomMedecin     String
+
+  // timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+
+  // relations
+  userProfile UserProfile @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
+}
+
+model Suivi {
+  id               String  @id @default(uuid())
+  patientProfileId String
+  medecinProfileId String
+  diagnostique     String
+  traitement       String?
+
+  // timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+
+  // relations
+  patientProfile UserProfile @relation("PatientProfile", fields: [patientProfileId], references: [id], onDelete: Cascade)
+  medecinProfile UserProfile @relation("MedecinProfile", fields: [medecinProfileId], references: [id], onDelete: Cascade)
+}
+
+enum TypeAntecedent {
+  CHIRURGICAL
+  FAMILIAUX
+  PSYCHOLOGIQUES
+  TOXICOLOGIQUES
+  TRAUMATIQUES
+  VACCINAUX
+  ALLERGIQUES
+  AUTRES
 }
 
 model Diplome {
