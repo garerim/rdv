@@ -97,7 +97,7 @@ model Diplome {
   imageDiplome         String
 
   // relations
-  userProfile UserProfile @relation(fields: [userProfileId], references: [id])
+  userProfile UserProfile @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
 }
 
 model Devis {
@@ -118,7 +118,7 @@ model Devis {
 
   // relations
   professionel UserProfile @relation("DevisProfessionel", fields: [professionelId], references: [id])
-  patient      UserProfile @relation("DevisPatient", fields: [patientId], references: [id])
+  patient      UserProfile @relation("DevisPatient", fields: [patientId], references: [id], onDelete: Cascade)
   rendezVous   RendezVous  @relation(fields: [rendezVousId], references: [id])
 }
 
@@ -138,11 +138,11 @@ model Notification {
   updatedAt DateTime @updatedAt()
 
   // relations
-  professionel UserProfile @relation("NotificationProfessionel", fields: [professionelId], references: [id])
-  patient      UserProfile @relation("NotificationPatient", fields: [patientId], references: [id])
-  sender       UserProfile @relation("NotificationSender", fields: [envoyeurId], references: [id])
-  reciever     UserProfile @relation("NotificationReciever", fields: [reveveurId], references: [id])
-  rendezVous   RendezVous  @relation(fields: [rendezVousId], references: [id])
+  professionel UserProfile @relation("NotificationProfessionel", fields: [professionelId], references: [id], onDelete: Cascade)
+  patient      UserProfile @relation("NotificationPatient", fields: [patientId], references: [id], onDelete: Cascade)
+  sender       UserProfile @relation("NotificationSender", fields: [envoyeurId], references: [id], onDelete: Cascade)
+  reciever     UserProfile @relation("NotificationReciever", fields: [reveveurId], references: [id], onDelete: Cascade)
+  rendezVous   RendezVous  @relation(fields: [rendezVousId], references: [id], onDelete: Cascade)
 }
 
 model Post {
@@ -159,7 +159,7 @@ model Post {
   updatedAt DateTime @updatedAt()
 
   // relations
-  user UserProfile @relation(fields: [userProfileId], references: [id])
+  user UserProfile @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
 }
 
 model PostLike {
@@ -168,8 +168,8 @@ model PostLike {
   postId        String
 
   // relations
-  user UserProfile @relation(fields: [userProfileId], references: [id])
-  post Post        @relation(fields: [postId], references: [id])
+  user UserProfile @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
+  post Post        @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
 
 model PostComment {
@@ -184,8 +184,8 @@ model PostComment {
   updatedAt DateTime @updatedAt()
 
   // relations
-  user UserProfile @relation(fields: [userProfileId], references: [id])
-  post Post        @relation(fields: [postId], references: [id])
+  user UserProfile @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
+  post Post        @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
 
 model RendezVous {
@@ -202,8 +202,8 @@ model RendezVous {
   fichierJoint   String
 
   // relations
-  professionel UserProfile @relation("RendezVousProfessionel", fields: [professionelId], references: [id])
-  patient      UserProfile @relation("RendezVousPatient", fields: [patientId], references: [id])
+  professionel UserProfile @relation("RendezVousProfessionel", fields: [professionelId], references: [id], onDelete: Cascade)
+  patient      UserProfile @relation("RendezVousPatient", fields: [patientId], references: [id], onDelete: Cascade)
 
   // external relations
   devis         Devis[]
@@ -221,7 +221,7 @@ model Available {
   endDate       DateTime
 
   // relations
-  userProfile UserProfile @relation(fields: [userProfileId], references: [id])
+  userProfile UserProfile @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
 
   // timestamps
   createdAt DateTime @default(now())
@@ -241,7 +241,7 @@ model Review {
   updatedAt DateTime @updatedAt()
 
   // relations
-  userProfile UserProfile @relation(fields: [userProfileId], references: [id])
+  userProfile UserProfile @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
 }
 
 model ReviewLike {
@@ -254,8 +254,8 @@ model ReviewLike {
   updatedAt DateTime @updatedAt()
 
   // relations
-  review Review      @relation(fields: [reviewId], references: [id])
-  user   UserProfile @relation(fields: [userId], references: [id])
+  review Review      @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  user   UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model ReviewComment {
@@ -273,8 +273,8 @@ model ReviewComment {
   updatedAt DateTime @updatedAt()
 
   // relations
-  user   UserProfile @relation(fields: [userProfileId], references: [id])
-  review Review      @relation(fields: [reviewId], references: [id])
+  user   UserProfile @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
+  review Review      @relation(fields: [reviewId], references: [id], onDelete: Cascade)
 }
 
 model Message {
@@ -285,8 +285,8 @@ model Message {
   isLiked        Boolean @default(false)
 
   // relations
-  user         UserProfile  @relation(fields: [userProfileId], references: [id])
-  conversation Conversation @relation(fields: [conversationId], references: [id])
+  user         UserProfile  @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
   // timestamps
   createdAt DateTime @default(now())
@@ -297,9 +297,9 @@ model Conversation {
   id               String      @id @default(uuid())
   name             String
   membreCreateurId String
-  membreCreateur   UserProfile @relation("MembreCreateur", fields: [membreCreateurId], references: [id])
+  membreCreateur   UserProfile @relation("MembreCreateur", fields: [membreCreateurId], references: [id], onDelete: Cascade)
   membreSuiveurId  String
-  membreSuiveur    UserProfile @relation("MembreSuiveur", fields: [membreSuiveurId], references: [id])
+  membreSuiveur    UserProfile @relation("MembreSuiveur", fields: [membreSuiveurId], references: [id], onDelete: Cascade)
 
   // relations
   messages Message[]
