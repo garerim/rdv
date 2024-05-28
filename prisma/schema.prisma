@@ -12,7 +12,7 @@ generator client {
 
 model UserProfile {
   // user props
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(uuid())
   avatar      String?
   firstName   String
   lastName    String
@@ -41,9 +41,9 @@ model UserProfile {
   domainesSecondaires String[]
 
   // relations
-  abonnes     UserProfile[] @relation("UserProfileAbonnes")
-  abonnements UserProfile[] @relation("UserProfileAbonnes")
-  messages    Message[]
+  abonnes       UserProfile[] @relation("UserProfileAbonnes")
+  abonnements   UserProfile[] @relation("UserProfileAbonnes")
+  messages      Message[]
   conversations Json[]
 
   // social media
@@ -84,11 +84,14 @@ model UserProfile {
   rendezVousPatient        RendezVous[]    @relation("RendezVousPatient")
   reviewComment            ReviewComment[]
   diplomes                 Diplome[]
+  conversationsCrees       Conversation[]  @relation("MembreCreateur")
+  conversationsRejointes   Conversation[]  @relation("MembreSuiveur")
+  userLikes                ReviewLike[]
 }
 
 model Diplome {
-  id                   Int      @id @default(autoincrement())
-  userProfileId        Int
+  id                   String   @id @default(uuid())
+  userProfileId        String
   diplomeName          String
   diplomeDateObtention DateTime
   imageDiplome         String
@@ -98,10 +101,10 @@ model Diplome {
 }
 
 model Devis {
-  id             Int     @id @default(autoincrement())
-  professionelId Int
-  patientId      Int
-  rendezVousId   Int
+  id             String  @id @default(uuid())
+  professionelId String
+  patientId      String
+  rendezVousId   String
   prixAvantTVA   Float
   TVA            Float   @default(0.2)
   prixFinal      Float
@@ -120,12 +123,12 @@ model Devis {
 }
 
 model Notification {
-  id             Int    @id @default(autoincrement())
-  professionelId Int
-  patientId      Int
-  envoyeurId     Int
-  reveveurId     Int
-  rendezVousId   Int
+  id             String @id @default(uuid())
+  professionelId String
+  patientId      String
+  envoyeurId     String
+  reveveurId     String
+  rendezVousId   String
   etat           String @default("non-lu")
   title          String
   contenu        String
@@ -143,8 +146,8 @@ model Notification {
 }
 
 model Post {
-  id            Int           @id @default(autoincrement())
-  userProfileId Int
+  id            String        @id @default(uuid())
+  userProfileId String
   titre         String
   contenu       String
   image         String?
@@ -160,9 +163,9 @@ model Post {
 }
 
 model PostLike {
-  id            Int @id @default(autoincrement())
-  userProfileId Int
-  postId        Int
+  id            String @id @default(uuid())
+  userProfileId String
+  postId        String
 
   // relations
   user UserProfile @relation(fields: [userProfileId], references: [id])
@@ -170,9 +173,9 @@ model PostLike {
 }
 
 model PostComment {
-  id            Int    @id @default(autoincrement())
-  userProfileId Int
-  postId        Int
+  id            String @id @default(uuid())
+  userProfileId String
+  postId        String
   titre         String
   contenu       String
 
@@ -186,9 +189,9 @@ model PostComment {
 }
 
 model RendezVous {
-  id             Int       @id @default(autoincrement())
-  professionelId Int
-  patientId      Int
+  id             String    @id @default(uuid())
+  professionelId String
+  patientId      String
   startDate      DateTime
   endDate        DateTime?
   duration       Float
@@ -212,8 +215,8 @@ model RendezVous {
 }
 
 model Available {
-  id            Int      @id @default(autoincrement())
-  userProfileId Int
+  id            String   @id @default(uuid())
+  userProfileId String
   startDate     DateTime
   endDate       DateTime
 
@@ -226,17 +229,12 @@ model Available {
 }
 
 model Review {
-  id            Int             @id @default(autoincrement())
-  userProfileId Int
+  id            String          @id @default(uuid())
+  userProfileId String
   titre         String
   contenu       String
   comments      ReviewComment[]
-  date          DateTime        @default(now())
-  type          String
-
-  // review stats
-  nbYes Int @default(0)
-  nbNo  Int @default(0)
+  likes         ReviewLike[]
 
   // timestamps
   createdAt DateTime @default(now())
@@ -246,10 +244,24 @@ model Review {
   userProfile UserProfile @relation(fields: [userProfileId], references: [id])
 }
 
+model ReviewLike {
+  id       String @id @default(uuid())
+  reviewId String
+  userId   String
+
+  // timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+
+  // relations
+  review Review      @relation(fields: [reviewId], references: [id])
+  user   UserProfile @relation(fields: [userId], references: [id])
+}
+
 model ReviewComment {
-  id            Int    @id @default(autoincrement())
-  userProfileId Int
-  reviewId      Int
+  id            String @id @default(uuid())
+  userProfileId String
+  reviewId      String
   text          String
 
   // reviewComment stats
@@ -266,9 +278,9 @@ model ReviewComment {
 }
 
 model Message {
-  id             Int     @id @default(autoincrement())
-  userProfileId  Int
-  conversationId Int
+  id             String  @id @default(uuid())
+  userProfileId  String
+  conversationId String
   text           String
   isLiked        Boolean @default(false)
 
@@ -282,9 +294,20 @@ model Message {
 }
 
 model Conversation {
-  id           Int    @id @default(autoincrement())
-  name         String
-  participants Json[]
+  id               String      @id @default(uuid())
+  name             String
+  membreCreateurId String
+  membreCreateur   UserProfile @relation("MembreCreateur", fields: [membreCreateurId], references: [id])
+  membreSuiveurId  String
+  membreSuiveur    UserProfile @relation("MembreSuiveur", fields: [membreSuiveurId], references: [id])
 
+  // relations
   messages Message[]
+
+  // timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+
+  @@unique([membreCreateurId, membreSuiveurId])
+  @@index(membreSuiveurId)
 }
