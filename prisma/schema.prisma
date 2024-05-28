@@ -11,191 +11,280 @@ generator client {
 }
 
 model UserProfile {
-  id                 Int       @id @default(autoincrement())
-  firstName          String
-  lastName           String
-  email              String    @unique
-  password           String
-  birthDate          DateTime
-  activated          Boolean   @default(false)
-  secretToken        String?
-  role               String
-  sexe               String?
-  addressGouvernerat String?
-  addressVille       String?
-  addressCite        String?
-  telephoneMobile    String[]
-  telephoneFix       String[]
-  diplome            String[]
-  imageDiplome       String?
-  rating             Float?
-  domainePrincipal   String?
-  domaineSecondaires String[]
-  abonnes            UserProfile[] @relation("UserProfileAbonnes")
-  abonneDe           UserProfile[] @relation("UserProfileAbonnes")
-  socialYoutube      String?
-  socialTwitter      String?
-  socialFacebook     String?
-  socialLinkedin     String?
-  socialInstagram    String?
-  date               DateTime  @default(now())
-  cv                 String?
-  description        String?
-  metier             String?
-  tags               String[]
-  avatar             String?
-  available          Available[]
-  prixPcr            Float?
-  video              String?
-  reviews            Review[]
-  nbyes              Int?
-  nbno               Int?
+  // user props
+  id          Int      @id @default(autoincrement())
+  avatar      String?
+  firstName   String
+  lastName    String
+  email       String   @unique
+  password    String
+  birthDate   DateTime
+  activated   Boolean  @default(true)
+  secretToken String?
+  role        String   @default("user")
+  sexe        String
 
-  devisProfessionel  Devis[] @relation("DevisProfessionel")
-  devisPatient       Devis[] @relation("DevisPatient")
-  notificationProfessionel Notification[] @relation("NotificationProfessionel")
-  notificationPatient Notification[] @relation("NotificationPatient")
-  notificationSender Notification[] @relation("NotificationSender")
-  notificationReciever Notification[] @relation("NotificationReciever")
-  post               Post[]
-  postLike           PostLike[]
-  postComment        PostComment[]
-  rendezVousProfessionel RendezVous[] @relation("RendezVousProfessionel")
-  rendezVousPatient  RendezVous[] @relation("RendezVousPatient")
-  reviewComment      ReviewComment[]
+  // address
+  adresseRegion      String?
+  adresseDepartement String?
+  adresseVille       String?
+  adresseRueEtNumero String?
+
+  // contact
+  telephoneMobile String?
+  telephoneFix    String?
+
+  // social creds
+  nbVotesPour         Int?
+  nbVotesContre       Int?
+  domainePrincipal    String?
+  domainesSecondaires String[]
+
+  // relations
+  abonnes     UserProfile[] @relation("UserProfileAbonnes")
+  abonnements UserProfile[] @relation("UserProfileAbonnes")
+  messages    Message[]
+  conversations Json[]
+
+  // social media
+  socialWebsite   String?
+  socialYoutube   String?
+  socialTwitter   String?
+  socialFacebook  String?
+  socialLinkedin  String?
+  socialInstagram String?
+  video           String?
+
+  // professionel props
+  cv          String?
+  description String?
+  metier      String?
+  tags        String[]
+  available   Available[]
+  prixPcr     Float?
+  reviews     Review[]
+  nbYes       Int?
+  nbNo        Int?
+
+  // timestamps
+  dateDeCreation     DateTime @default(now())
+  dateDeModification DateTime @updatedAt()
+
+  // relations
+  devisProfessionel        Devis[]         @relation("DevisProfessionel")
+  devisPatient             Devis[]         @relation("DevisPatient")
+  notificationProfessionel Notification[]  @relation("NotificationProfessionel")
+  notificationPatient      Notification[]  @relation("NotificationPatient")
+  notificationSender       Notification[]  @relation("NotificationSender")
+  notificationReciever     Notification[]  @relation("NotificationReciever")
+  post                     Post[]
+  postLike                 PostLike[]
+  postComment              PostComment[]
+  rendezVousProfessionel   RendezVous[]    @relation("RendezVousProfessionel")
+  rendezVousPatient        RendezVous[]    @relation("RendezVousPatient")
+  reviewComment            ReviewComment[]
+  diplomes                 Diplome[]
+}
+
+model Diplome {
+  id                   Int      @id @default(autoincrement())
+  userProfileId        Int
+  diplomeName          String
+  diplomeDateObtention DateTime
+  imageDiplome         String
+
+  // relations
+  userProfile UserProfile @relation(fields: [userProfileId], references: [id])
 }
 
 model Devis {
-  id             Int       @id @default(autoincrement())
+  id             Int     @id @default(autoincrement())
   professionelId Int
   patientId      Int
-  appointmentId  Int
-  prixAvantTva   Float
-  tva            Float
+  rendezVousId   Int
+  prixAvantTVA   Float
+  TVA            Float   @default(0.2)
   prixFinal      Float
+  contenu        String
+  description    String?
+  etat           String  @default("en-attente")
 
-  professionel   UserProfile @relation("DevisProfessionel", fields: [professionelId], references: [id])
-  patient        UserProfile @relation("DevisPatient", fields: [patientId], references: [id])
-  appointment    RendezVous  @relation(fields: [appointmentId], references: [id])
+  // timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+
+  // relations
+  professionel UserProfile @relation("DevisProfessionel", fields: [professionelId], references: [id])
+  patient      UserProfile @relation("DevisPatient", fields: [patientId], references: [id])
+  rendezVous   RendezVous  @relation(fields: [rendezVousId], references: [id])
 }
 
 model Notification {
-  id             Int       @id @default(autoincrement())
+  id             Int    @id @default(autoincrement())
   professionelId Int
   patientId      Int
-  senderId       Int
-  recieverId     Int
+  envoyeurId     Int
+  reveveurId     Int
   rendezVousId   Int
-  etat           String
+  etat           String @default("non-lu")
   title          String
-  date           DateTime  @default(now())
+  contenu        String
 
-  professionel   UserProfile @relation("NotificationProfessionel", fields: [professionelId], references: [id])
-  patient        UserProfile @relation("NotificationPatient", fields: [patientId], references: [id])
-  sender         UserProfile @relation("NotificationSender", fields: [senderId], references: [id])
-  reciever       UserProfile @relation("NotificationReciever", fields: [recieverId], references: [id])
-  rendezVous     RendezVous  @relation(fields: [rendezVousId], references: [id])
+  // timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+
+  // relations
+  professionel UserProfile @relation("NotificationProfessionel", fields: [professionelId], references: [id])
+  patient      UserProfile @relation("NotificationPatient", fields: [patientId], references: [id])
+  sender       UserProfile @relation("NotificationSender", fields: [envoyeurId], references: [id])
+  reciever     UserProfile @relation("NotificationReciever", fields: [reveveurId], references: [id])
+  rendezVous   RendezVous  @relation(fields: [rendezVousId], references: [id])
 }
 
 model Post {
-  id      Int      @id @default(autoincrement())
-  userId  Int
-  text    String
-  likes   PostLike[]
-  comments PostComment[]
-  date    DateTime @default(now())
-  type    String   @default("text")
+  id            Int           @id @default(autoincrement())
+  userProfileId Int
+  titre         String
+  contenu       String
+  image         String?
+  likes         PostLike[]
+  commentaires  PostComment[]
 
-  user    UserProfile @relation(fields: [userId], references: [id])
+  // timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+
+  // relations
+  user UserProfile @relation(fields: [userProfileId], references: [id])
 }
 
 model PostLike {
-  id      Int      @id @default(autoincrement())
-  userId  Int
-  postId  Int
+  id            Int @id @default(autoincrement())
+  userProfileId Int
+  postId        Int
 
-  user    UserProfile @relation(fields: [userId], references: [id])
-  post    Post        @relation(fields: [postId], references: [id])
+  // relations
+  user UserProfile @relation(fields: [userProfileId], references: [id])
+  post Post        @relation(fields: [postId], references: [id])
 }
 
 model PostComment {
-  id      Int      @id @default(autoincrement())
-  userId  Int
-  postId  Int
-  text    String
-  date    DateTime @default(now())
+  id            Int    @id @default(autoincrement())
+  userProfileId Int
+  postId        Int
+  titre         String
+  contenu       String
 
-  user    UserProfile @relation(fields: [userId], references: [id])
-  post    Post        @relation(fields: [postId], references: [id])
+  // timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+
+  // relations
+  user UserProfile @relation(fields: [userProfileId], references: [id])
+  post Post        @relation(fields: [postId], references: [id])
 }
 
 model RendezVous {
-  id               Int      @id @default(autoincrement())
-  professionelId   Int
-  patientId        Int
-  startDate        DateTime
-  endDate          DateTime
-  etat             String
-  typeRendezVous   String
-  description      String
-  prix             Float
-  idevent          Int
-  fichierJoint     String
+  id             Int       @id @default(autoincrement())
+  professionelId Int
+  patientId      Int
+  startDate      DateTime
+  endDate        DateTime?
+  duration       Float
+  etat           String    @default("a-venir")
+  typeRendezVous String    @default("consultation")
+  description    String
+  prix           Float
+  fichierJoint   String
 
-  professionel     UserProfile @relation("RendezVousProfessionel", fields: [professionelId], references: [id])
-  patient          UserProfile @relation("RendezVousPatient", fields: [patientId], references: [id])
+  // relations
+  professionel UserProfile @relation("RendezVousProfessionel", fields: [professionelId], references: [id])
+  patient      UserProfile @relation("RendezVousPatient", fields: [patientId], references: [id])
 
-  devis            Devis[]
-  notifications    Notification[]
+  // external relations
+  devis         Devis[]
+  notifications Notification[]
+
+  // timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
 }
 
 model Available {
-  id               Int      @id @default(autoincrement())
-  userProfileId    Int
-  startDate        DateTime
-  endDate          DateTime
+  id            Int      @id @default(autoincrement())
+  userProfileId Int
+  startDate     DateTime
+  endDate       DateTime
 
-  userProfile      UserProfile @relation(fields: [userProfileId], references: [id])
+  // relations
+  userProfile UserProfile @relation(fields: [userProfileId], references: [id])
+
+  // timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
 }
 
 model Review {
-  id               Int      @id @default(autoincrement())
-  userProfileId    Int
-  description      String
-  comments         ReviewComment[]
-  date             DateTime @default(now())
-  type             String
-  nbyes            Int?
-  nbno             Int?
+  id            Int             @id @default(autoincrement())
+  userProfileId Int
+  titre         String
+  contenu       String
+  comments      ReviewComment[]
+  date          DateTime        @default(now())
+  type          String
 
-  userProfile      UserProfile @relation(fields: [userProfileId], references: [id])
+  // review stats
+  nbYes Int @default(0)
+  nbNo  Int @default(0)
+
+  // timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+
+  // relations
+  userProfile UserProfile @relation(fields: [userProfileId], references: [id])
 }
 
 model ReviewComment {
-  id               Int      @id @default(autoincrement())
-  userId           Int
-  reviewId         Int
-  text             String
-  date             DateTime @default(now())
+  id            Int    @id @default(autoincrement())
+  userProfileId Int
+  reviewId      Int
+  text          String
 
-  user             UserProfile @relation(fields: [userId], references: [id])
-  review           Review      @relation(fields: [reviewId], references: [id])
+  // reviewComment stats
+  nbYes Int @default(0)
+  nbNo  Int @default(0)
+
+  // timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+
+  // relations
+  user   UserProfile @relation(fields: [userProfileId], references: [id])
+  review Review      @relation(fields: [reviewId], references: [id])
 }
 
 model Message {
-  id               Int      @id @default(autoincrement())
-  created          DateTime
-  from             String
-  text             String
-  conversationId   Int
+  id             Int     @id @default(autoincrement())
+  userProfileId  Int
+  conversationId Int
+  text           String
+  isLiked        Boolean @default(false)
 
-  conversation     Conversation @relation(fields: [conversationId], references: [id])
+  // relations
+  user         UserProfile  @relation(fields: [userProfileId], references: [id])
+  conversation Conversation @relation(fields: [conversationId], references: [id])
+
+  // timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
 }
 
 model Conversation {
-  id               Int      @id @default(autoincrement())
-  participants     Json[]
-  name             String
+  id           Int    @id @default(autoincrement())
+  name         String
+  participants Json[]
 
-  messages         Message[]
+  messages Message[]
 }
