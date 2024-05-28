@@ -27,7 +27,7 @@ model UserProfile {
   birthDate   DateTime
   activated   Boolean  @default(true)
   secretToken String?
-  role        UserRole   @default(USER)
+  role        UserRole @default(USER)
   sexe        String
 
   // address
@@ -152,17 +152,23 @@ model Diplome {
   userProfile UserProfile @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
 }
 
+enum EtatDevis {
+  EN_ATTENTE
+  ACCEPTE
+  REFUSE
+}
+
 model Devis {
-  id             String  @id @default(uuid())
+  id             String    @id @default(uuid())
   professionelId String
   patientId      String
   rendezVousId   String
   prixAvantTVA   Float
-  TVA            Float   @default(0.2)
+  TVA            Float     @default(0.2)
   prixFinal      Float
   contenu        String
   description    String?
-  etat           String  @default("en-attente")
+  etat           EtatDevis @default(EN_ATTENTE)
 
   // timestamps
   createdAt DateTime @default(now())
@@ -174,14 +180,19 @@ model Devis {
   rendezVous   RendezVous  @relation(fields: [rendezVousId], references: [id])
 }
 
+enum EtatNotification {
+  NON_LU
+  LU
+}
+
 model Notification {
-  id             String @id @default(uuid())
+  id             String           @id @default(uuid())
   professionelId String
   patientId      String
   envoyeurId     String
   reveveurId     String
   rendezVousId   String
-  etat           String @default("non-lu")
+  etat           EtatNotification @default(NON_LU)
   title          String
   contenu        String
 
@@ -240,15 +251,27 @@ model PostComment {
   post Post        @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
 
+enum TypeRendezVous {
+  CONSULTATION
+  EXAMEN
+  AUTRE
+}
+
+enum EtatRendezVous {
+  A_VENIR
+  PASSE
+  ANNULE
+}
+
 model RendezVous {
-  id             String    @id @default(uuid())
+  id             String         @id @default(uuid())
   professionelId String
   patientId      String
   startDate      DateTime
   endDate        DateTime?
   duration       Float
-  etat           String    @default("a-venir")
-  typeRendezVous String    @default("consultation")
+  etat           EtatRendezVous @default(A_VENIR)
+  typeRendezVous TypeRendezVous @default(CONSULTATION)
   description    String
   prix           Float
   fichierJoint   String
