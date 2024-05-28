@@ -1,5 +1,11 @@
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Button } from "@/components/ui/button";
+import {
+    SignInButton,
+    SignedIn,
+    SignedOut,
+    UserButton
+} from '@clerk/nextjs'
 
 
 export default function Header() {
@@ -10,8 +16,20 @@ export default function Header() {
             <h2 className="text-2xl font-bold mr-auto">RendezVous</h2>
 
             <div className="ml-auto flex items-center gap-2">
-                <Button>S'inscrire</Button>
-                <Button>Se connecter</Button>
+                {/* <Button>S'inscrire</Button>
+                <Button>Se connecter</Button> */}
+                <SignedOut>
+                    <Button>
+                        <SignInButton />
+                    </Button>
+                </SignedOut>
+                <SignedIn>
+                    <UserButton afterSignOutUrl='/' appearance={{
+                        elements: {
+                            avatarBox: 'h-[30px] w-[30px]'
+                        }
+                    }} />
+                </SignedIn>
                 <ThemeToggle />
             </div>
         </header>

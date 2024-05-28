@@ -23,7 +23,7 @@ model UserProfile {
   firstName   String
   lastName    String
   email       String   @unique
-  password    String
+  // password    String
   birthDate   DateTime
   activated   Boolean  @default(true)
   secretToken String?
