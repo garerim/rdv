@@ -10,6 +10,12 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum UserRole {
+  USER
+  DOCTOR
+  ADMIN
+}
+
 model UserProfile {
   // user props
   id          String   @id @default(uuid())
@@ -21,7 +27,7 @@ model UserProfile {
   birthDate   DateTime
   activated   Boolean  @default(true)
   secretToken String?
-  role        String   @default("user")
+  role        UserRole   @default(USER)
   sexe        String
 
   // address
