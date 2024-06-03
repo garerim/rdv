@@ -82,7 +82,7 @@ async function authUser(req: NextApiRequest, res: NextApiResponse) {
       })
       
       if (existingJWT) {
-        token = existingJWT
+        token = existingJWT.token
       } else {
         try {
           token = jwt.sign({ userId: user.id, email: user.email, role: user.role }, process.env.JWT_SECRET, 
@@ -91,7 +91,7 @@ async function authUser(req: NextApiRequest, res: NextApiResponse) {
             }
           );
           
-          const dateFinValidite = (new Date().getTime() + 60*60*24*7).toString();
+          const dateFinValidite = (new Date().getTime() + 7 * 24 * 60 * 60 * 1000).toString();
           // console.log(dateFinValidite)
 
           await prisma.jWTToken.create({
@@ -106,14 +106,14 @@ async function authUser(req: NextApiRequest, res: NextApiResponse) {
             },
           });
       
-          res.status(200).json({ jwtToken: token, jwtExp: dateFinValidite });
+          res.status(200).json({ message: "Authentification réussie", user: user, jwtToken: token, jwtExp: dateFinValidite });
         } catch (error) {
           console.error("Error creating JWT token:", error);
           res.status(500).json({ error: "Erreur lors de la création du JWT token" });
         }
       }
 
-      res.status(200).json({ message: "Authentification réussie", user: user, jwtToken: token, jwtExp: token.validUntilTimeStamp });
+      res.status(200).json({ message: "Authentification réussie", user: user, jwtToken: token, jwtExp: existingJWT?.validUntilTimeStamp });
     } else {
       res.status(401).json({ error: "Mot de passe incorrect" });
     }

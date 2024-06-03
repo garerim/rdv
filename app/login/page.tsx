@@ -30,11 +30,8 @@ export default function Login() {
             const data = await response.json();
             localStorage.setItem('jwtToken', data.jwtToken);
             localStorage.setItem('jwtExp', data.jwtExp)
-            console.log(data.jwtExp);
+            localStorage.getItem('jstToken')
             console.log(localStorage.getItem('jwtExp'))
-            // console.log(data.jwtToken);
-            // console.log(localStorage.getItem('jwt'));
-            // console.log(data.jwtToken === localStorage.getItem('jwt'));
         } else {
             const errorData = await response.json();
             setError(errorData.error || 'Erreur lors de l\'authentification de l\'utilisateur');

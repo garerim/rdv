@@ -1,49 +1,44 @@
 'use client'
 
 import NotConnected from "@/components/notConnected/NotConnected";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { isTokenExpired } from "@/lib/utils";
 
 export default function Dashboard() {
-    const [ jwtToken, setJwtToken ] = useState<String>();
-    const [ jwtExp, setJwtExp ] = useState<String>();
-
-    const disconnect = useCallback(async () => {
-        localStorage.removeItem("jwtToken")
-        localStorage.removeItem("jwtExp")
-        setJwtToken(undefined)
-        setJwtExp(undefined)
-
-        const response = await fetch('/api/auth', {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                token: jwtToken
-            }),
-        });
-        console.log(response.ok)
-    }, [jwtToken])
+    const [ jwtToken, setJwtToken ] = useState<string | null>();
+    const [ jwtExp, setJwtExp ] = useState<string | null>();
 
     useEffect(() => {
-        const verifyJWT = async () => {
-            const storedJwt = localStorage.getItem("jwtToken");  
-            const storedJwtExp = localStorage.getItem("jwtExp");
-            if (storedJwt !== null && storedJwtExp !== null) {
-                const isExpired = isTokenExpired(storedJwtExp)
-                console.log(isExpired)
-                if (isExpired) {
-                    console.log("okExpired")
-                    disconnect()
-                }
-                setJwtToken(storedJwt);
-                setJwtExp(storedJwtExp);
+        const setLocalStorage = () => {
+            try {
+                const storedJwt = localStorage.getItem('jwtToken')
+                const storedJwtExp = localStorage.getItem('jwtExp')
+                setJwtToken(storedJwt)
+                setJwtExp(storedJwtExp)
+            } catch (error) {
+                console.error('Error setting local storage:', error)
             }
         }
 
+        const verifyJWT = async () => {
+            console.log(jwtToken, jwtExp)
+            if (jwtToken !== null && jwtToken !== undefined && jwtExp !== null && jwtExp !== undefined) {
+                const expNumber = parseInt(jwtExp)
+                const isExpired = isTokenExpired(expNumber)
+                console.log(isExpired)
+                if (isExpired) {
+                    console.log(123456)
+                    setJwtToken(null)
+                    setJwtExp(null)
+                    localStorage.removeItem('jwtToken')
+                    localStorage.removeItem('jwtExp')
+                }
+            }
+        }
+
+        setLocalStorage()
         verifyJWT()
-    }, [jwtToken, jwtExp, disconnect]);
+    }, [jwtExp, jwtToken]);
 
     return (
         <>
@@ -52,7 +47,7 @@ export default function Dashboard() {
                 (
                     <div>
                         <h1>Dashboard</h1>
-                        <button onClick={() => { disconnect }}>Disconnect</button>
+                        <button onClick={() => { localStorage.removeItem('jwtToken'), localStorage.removeItem('jwtExp'), setJwtToken(null), setJwtExp(null) }}>Disconnect</button>
                     </div>
                 )}
             </div>
