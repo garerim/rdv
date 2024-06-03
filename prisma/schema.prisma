@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -18,17 +18,16 @@ enum UserRole {
 
 model UserProfile {
   // user props
-  id          String   @id @default(uuid())
-  avatar      String?
-  firstName   String
-  lastName    String
-  email       String   @unique
-  // password    String
-  birthDate   DateTime
-  activated   Boolean  @default(true)
-  secretToken String?
-  role        UserRole @default(USER)
-  sexe        String
+  id        String   @id @default(uuid())
+  avatar    String?
+  firstName String
+  lastName  String
+  email     String   @unique
+  password  String
+  birthDate DateTime
+  activated Boolean  @default(true)
+  role      UserRole @default(USER)
+  sexe      String
 
   // address
   adresseRegion      String?
@@ -44,13 +43,13 @@ model UserProfile {
   nbVotesPour         Int?
   nbVotesContre       Int?
   domainePrincipal    String?
-  domainesSecondaires String[]
+  domainesSecondaires String?
 
   // relations
   abonnes       UserProfile[] @relation("UserProfileAbonnes")
   abonnements   UserProfile[] @relation("UserProfileAbonnes")
   messages      Message[]
-  conversations Json[]
+  conversations Json?
 
   // social media
   socialWebsite   String?
@@ -65,12 +64,10 @@ model UserProfile {
   cv          String?
   description String?
   metier      String?
-  tags        String[]
+  tags        String?
   available   Available[]
   prixPcr     Float?
   reviews     Review[]
-  nbYes       Int?
-  nbNo        Int?
 
   // timestamps
   dateDeCreation     DateTime @default(now())
@@ -96,6 +93,22 @@ model UserProfile {
   Antecedents              Antecedent[]
   SuiviPatient             Suivi[]         @relation("PatientProfile")
   SuiviMedecin             Suivi[]         @relation("MedecinProfile")
+  JWTToken                 JWTToken[]
+}
+
+model JWTToken {
+  id                  String @id @default(uuid())
+  token               String @db.LongText
+  userId              String
+  isActive            Int    @default(1)
+  validUntilTimeStamp String
+
+  // timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+
+  // relations
+  user UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Antecedent {
