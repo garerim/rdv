@@ -24,3 +24,13 @@ export function isTokenExpired(exp: number): boolean {
   }
 }
 
+
+export const Disconnect = (jwtStorage : string | null | undefined, jwtExp : string | null | undefined) => {
+  localStorage.removeItem('jwtToken')
+  localStorage.removeItem('jwtExp')
+
+  jwtStorage = null
+  jwtExp = null
+
+  return { jwtStorage, jwtExp }
+}
