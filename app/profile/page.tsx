@@ -1,88 +1,58 @@
 'use client'
 
-import { NotConnected } from "@/components/notConnected/NotConnected";
+import { Loader } from "@/components/loader/Loader";
+import NotConnected from "@/components/notConnected/NotConnected";
 import AccountSettings from "@/components/pageSections/user_profile/AccountSettings";
 import Billing from "@/components/pageSections/user_profile/Billing";
 import PersonalInfo from "@/components/pageSections/user_profile/PersonalInfo";
 import Profile from "@/components/pageSections/user_profile/Profile";
-import { Tab, Tabs } from "@nextui-org/tabs";
+import { isTokenExpired } from "@/lib/utils";
 import { useEffect, useState } from "react";
-// import { User } from "../../../public/User";
 
 export default function UserProfile() {
-    const [ token, setToken ] = useState<string | null>(null);
-    
-    useEffect(() => {
-        const getTokenFromLocalStorage = () => {
-            try {
-                const token = localStorage.getItem('token');
-                if (token) {
-                    setToken(token);
-                }
-            } catch (error) {
-                console.error('Error while getting localStorage`s token:', error);
-            }
-        };
+    const [ isMounted, setIsMounted ] = useState(false)
+    const [ jwtToken, setJwtToken ] = useState<string | null>();
+    const [ jwtExp, setJwtExp ] = useState<string | null>();
 
-        getTokenFromLocalStorage();
-    }, []);
+    useEffect(() => {
+        const setLocalStorage = () => {
+            try {
+                const storedJwt = localStorage.getItem('jwtToken')
+                const storedJwtExp = localStorage.getItem('jwtExp')
+                setJwtToken(storedJwt)
+                setJwtExp(storedJwtExp)
+                setIsMounted(true)
+            } catch (error) {
+                console.error('Error setting local storage:', error)
+            }
+        }
+
+        const verifyJWT = async () => {
+            console.log(jwtToken, jwtExp)
+            if (jwtToken !== null && jwtToken !== undefined && jwtExp !== null && jwtExp !== undefined) {
+                const expNumber = parseInt(jwtExp)
+                const isExpired = isTokenExpired(expNumber)
+                console.log(isExpired)
+                if (isExpired) {
+                    console.log(123456)
+                    setJwtToken(null)
+                    setJwtExp(null)
+                    localStorage.removeItem('jwtToken')
+                    localStorage.removeItem('jwtExp')
+                }
+            }
+        }
+
+        setLocalStorage()
+        verifyJWT()
+    }, [jwtExp, jwtToken]);
 
     return (
         <>
-                {token ? 
-                (
-                    <div className="relative top-[120px] left-1/2 -translate-x-1/2 flex w-[1000px]">
-                        <Tabs isVertical={true} variant="bordered">
-                            <Tab className="relative h-fit"
-                                title={
-                                <div className="flex items-center space-x-2 py-2">
-                                    <UserSVG color='black'/>
-                                    <span>Profil</span>
-                                </div>
-                            }>
-                                <div>
-                                    <Profile />
-                                </div>
-                            </Tab>
-                            <Tab className="h-fit"
-                                title={
-                                <div className="flex items-center space-x-2 py-2">
-                                    <PersonalInfoSVG color='black' />
-                                    <span>Informations personnelles</span>
-                                </div>
-                            }>
-                                <div>
-                                    <PersonalInfo />
-                                </div>
-                            </Tab>
-                            <Tab className="h-fit"
-                                title={
-                                <div className="flex items-center space-x-2 py-2">
-                                    <CreditCardSVG color='black'/>
-                                    <span>Facturation</span>
-                                </div>
-                            }>
-                                <div>
-                                    <Billing />
-                                </div>
-                            </Tab>
-                            <Tab className="h-fit" 
-                                title={
-                                <div className="flex items-center space-x-2 py-2">
-                                    <GearSVG color='black'/>
-                                    <span>Paramètres du compte</span>
-                                </div>
-                            }>
-                                <div>
-                                    <AccountSettings />
-                                </div>
-                            </Tab>
-                        </Tabs>
-                    </div>
-                ) : (
-                    <NotConnected />
-                )
-            }   
+            {!isMounted ? <Loader /> : 
+                !jwtToken ? <NotConnected/> : (
+                    <Profile />
+                )}
         </>
     );
 }
