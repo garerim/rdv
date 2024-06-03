@@ -52,7 +52,6 @@ export default function Dashboard() {
                     (
                         <div>
                             <h1>Dashboard</h1>
-                            <button onClick={() => { localStorage.removeItem('jwtToken'), localStorage.removeItem('jwtExp'), setJwtToken(null), setJwtExp(null) }}>Disconnect</button>
                         </div>
                     )}
                 </div>

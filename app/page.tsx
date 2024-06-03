@@ -1,13 +1,12 @@
-// 'use client'
+'use client'
 
 import { initialProfile } from "@/lib/initial-profile";
 
-export default async function Home() {
-  const user = await initialProfile()
+export default function Home() {
 
   return (
     <div className="absolute top-[5vh] w-full">
-        {user && JSON.stringify(user)}
+        <h1>HelloWorld</h1>
     </div>
   );
 }

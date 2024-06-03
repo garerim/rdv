@@ -36,8 +36,7 @@ export default function Login() {
             const data = await response.json();
             localStorage.setItem('jwtToken', data.jwtToken);
             localStorage.setItem('jwtExp', data.jwtExp)
-            localStorage.getItem('jstToken')
-            console.log(localStorage.getItem('jwtExp'))
+            window.location.href = '/dashboard'
         } else {
             const errorData = await response.json();
             setError(errorData.error || 'Erreur lors de l\'authentification de l\'utilisateur');
@@ -59,13 +58,12 @@ export default function Login() {
         }
 
         const verifyJWT = async () => {
-            console.log(jwtToken, jwtExp)
+            // console.log(jwtToken, jwtExp)
             if (jwtToken !== null && jwtToken !== undefined && jwtExp !== null && jwtExp !== undefined) {
                 const expNumber = parseInt(jwtExp)
                 const isExpired = isTokenExpired(expNumber)
                 console.log(isExpired)
                 if (isExpired) {
-                    console.log(123456)
                     setJwtToken(null)
                     setJwtExp(null)
                     localStorage.removeItem('jwtToken')

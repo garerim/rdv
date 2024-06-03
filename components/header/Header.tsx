@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Disconnect, isTokenExpired } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { Loader } from "../loader/Loader";
+import { Separator } from "../ui/separator";
 
 export default function Header() {
     const [ isMounted, setIsMounted ] = useState(false)
@@ -15,6 +16,7 @@ export default function Header() {
         const foo = Disconnect(jwtToken, jwtExp)
         setJwtToken(foo.jwtStorage)
         setJwtExp(foo.jwtExp)
+        window.location.reload()
     }
 
     useEffect(() => {
@@ -53,17 +55,23 @@ export default function Header() {
     return (
         <>
             {!isMounted ? <Loader /> : (
-                <header className="fixed top-0 left-0 w-full flex items-center mb-2 py-2 px-2 z-50 m-2">
-                    <h2 className="text-2xl font-bold mr-auto">Rendez-vous</h2>
+                <header className="fixed top-0 left-0 w-full h-fit flex items-center mb-2 py-2 px-2 z-50 m-2 select-none">
+                    <div className="flex items-center gap-4">
+                        <h2 className="text-2xl font-bold cursor-pointer m-0 p-0" onClick={() => window.location.href = '/'}>Rendez-vous</h2>
+                        <Separator orientation="vertical" className="relative mx-5 h-[40px] bg-foreground" />
+                        <Button variant={"ghost"} onClick={() => window.location.href = '/dashboard'}>Dashboard</Button>
+                        <Button variant={"ghost"} onClick={() => window.location.href = '/profile'}>Profil</Button>
+                        <Button variant={"ghost"} onClick={() => window.location.href = '/...'}>...</Button>
+                    </div>
 
                     <div className="ml-auto flex items-center gap-2">
                         {(!jwtToken ? (
                             <>
-                                <Button onClick={(e: any) => window.location.href = '/register'}>S`inscrire</Button>
-                                <Button onClick={(e: any) => window.location.href = '/login'}>Se connecter</Button>
+                                <Button onClick={() => window.location.href = '/login'} variant={"outline"}>Se connecter</Button>
+                                <Button onClick={() => window.location.href = '/register'}>S`inscrire</Button>
                             </>
                         ) : (
-                            <Button onClick={ (e: any) => DisconnectManager() }>Se déconnecter</Button>
+                            <Button onClick={() => DisconnectManager() }>Se déconnecter</Button>
                         ))}
                         <ThemeToggle />
                     </div>
