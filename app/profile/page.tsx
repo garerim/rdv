@@ -6,13 +6,17 @@ import AccountSettings from "@/components/pageSections/user_profile/AccountSetti
 import Billing from "@/components/pageSections/user_profile/Billing";
 import PersonalInfo from "@/components/pageSections/user_profile/PersonalInfo";
 import Profile from "@/components/pageSections/user_profile/Profile";
+import { Button } from "@/components/ui/button";
 import { isTokenExpired } from "@/lib/utils";
+import { Separator } from "@radix-ui/react-separator";
 import { useEffect, useState } from "react";
 
 export default function UserProfile() {
     const [ isMounted, setIsMounted ] = useState(false)
     const [ jwtToken, setJwtToken ] = useState<string | null>();
     const [ jwtExp, setJwtExp ] = useState<string | null>();
+
+    const [ activeTab, setActiveTab ] = useState('profile')
 
     useEffect(() => {
         const setLocalStorage = () => {
@@ -51,7 +55,25 @@ export default function UserProfile() {
         <>
             {!isMounted ? <Loader /> : 
                 !jwtToken ? <NotConnected/> : (
-                    <Profile />
+                    <>
+                        <div className="absolute flex flex-row w-[70vw] h-fit left-1/2 -translate-x-1/2">
+                            <div className="static flex">
+                                <div className="relative flex flex-col gap-5 my-10">
+                                    <Button variant={activeTab === "profile" ? "secondary" : "ghost"} onClick={() => setActiveTab("profile")}>Profil</Button>
+                                    <Button variant={activeTab === "info_perso" ? "secondary" : "ghost"} onClick={() => setActiveTab("info_perso")}>Informations personnelles</Button>
+                                    <Button variant={activeTab === "acc_settings" ? "secondary" : "ghost"} onClick={() => setActiveTab("acc_settings")}>Paramètres du compte</Button>
+                                    <Button variant={activeTab === "factu" ? "secondary" : "ghost"} onClick={() => setActiveTab("factu")}>Facturation</Button>
+                                </div>
+                                <Separator orientation="vertical" className="relative mx-[50px] h-[100%] w-[1px] bg-foreground" />
+                            </div>
+                            <div className="flex-1">
+                                {activeTab === "profile" && <Profile />}
+                                {activeTab === "info_perso" && <PersonalInfo />}
+                                {activeTab === "acc_settings" && <AccountSettings />}
+                                {activeTab === "factu" && <Billing />}
+                            </div>
+                        </div>
+                    </>
                 )}
         </>
     );
