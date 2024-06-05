@@ -1,14 +1,16 @@
 'use client'
 
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { isTokenExpired } from '@/lib/utils';
 import { Loader } from '@/components/loader/Loader';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { isTokenExpired } from '@/lib/utils';
+import { useEffect, useState } from 'react';
 
 export default function Register() {
-    const [ isMounted, setIsMounted ] = useState(false)
-    const [ jwtToken, setJwtToken ] = useState<string | null>();
-    const [ jwtExp, setJwtExp ] = useState<string | null>();
+    const [isMounted, setIsMounted] = useState(false)
+    const [jwtToken, setJwtToken] = useState<string | null>();
+    const [jwtExp, setJwtExp] = useState<string | null>();
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -45,8 +47,11 @@ export default function Register() {
             const errorData = await response.json();
             setError(errorData.error || 'Erreur lors de la création de l\'utilisateur');
         }
-
+        
         setLoading(false);
+        if (response.ok) {
+            window.location.href = "/login"
+        }
     };
 
 
@@ -85,22 +90,39 @@ export default function Register() {
 
     return (
         <>
-            {!isMounted ? <Loader /> : 
+            {!isMounted ? <Loader /> :
                 jwtToken ? (window.location.href = '/dashboard') : (
                     <div className="relative w-full h-full flex justify-center items-center">
-                        <form action="#" onSubmit={createUser} className='bg-[#555555] w-1/2 h-1/2 flex flex-col'>
-                            <input type="text" placeholder='Prénom' onChange={(e) => setFirstName(e.target.value)} autoComplete='off' />
-                            <input type="text" placeholder='Nom' onChange={(e) => setLastName(e.target.value)} autoComplete='off' />
-                            <input type="email" placeholder='email@gmail.com' onChange={(e) => setEmail(e.target.value)} autoComplete='off' />
-                            <input type="password" placeholder='Password' onChange={(e) => setPassword(e.target.value)} autoComplete='off' />
-                            <input type="date" onChange={(e) => setBirthDate(e.target.value)} autoComplete='off' />
-                            <select onChange={(e) => { setSexe(e.target.value), console.log(e.target.value) }} autoComplete='off' >
-                                <option value='H'>Homme</option>
-                                <option value='F'>Femme</option>
-                            </select>
-                            <input type='submit' className='cursor-pointer' onClick={createUser} disabled={loading} value={loading ? 'Loading...' : 'Click'} />
-                            {error && <p>{error}</p>}
-                        </form>
+                        <Card className='w-1/3'>
+                            <CardHeader>
+                                <CardTitle>Register</CardTitle>
+                                <CardDescription>Enter your informations to register</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <form action="#" onSubmit={createUser} className='w-full h-1/2 flex flex-col items-center gap-4'>
+
+                                    <Input type="text" placeholder='Prénom' onChange={(e) => setFirstName(e.target.value)} autoComplete='off' />
+
+                                    <Input type="text" placeholder='Nom' onChange={(e) => setLastName(e.target.value)} autoComplete='off' />
+
+                                    <Input type="email" placeholder='email@gmail.com' onChange={(e) => setEmail(e.target.value)} autoComplete='off' />
+
+                                    <Input type="password" placeholder='Password' onChange={(e) => setPassword(e.target.value)} autoComplete='off' />
+
+                                    <Input type="date" onChange={(e) => setBirthDate(e.target.value)} autoComplete='off' />
+
+                                    <select onChange={(e) => { setSexe(e.target.value), console.log(e.target.value) }} autoComplete='off' className='flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1' >
+                                        <option value='H'>Homme</option>
+                                        <option value='F'>Femme</option>
+                                    </select>
+
+                                    <Button type='submit' className='cursor-pointer' onClick={createUser} disabled={loading}>
+                                        {loading ? 'Loading...' : 'Register'}
+                                    </Button>
+                                    {error && <p>{error}</p>}
+                                </form>
+                            </CardContent>
+                        </Card>
                     </div>
                 )
             }
