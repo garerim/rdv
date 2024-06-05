@@ -1,7 +1,7 @@
 -- CreateTable
 CREATE TABLE `UserProfile` (
     `id` VARCHAR(191) NOT NULL,
-    `avatar` VARCHAR(191) NULL,
+    `avatar` LONGTEXT NULL,
     `firstName` VARCHAR(191) NOT NULL,
     `lastName` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,

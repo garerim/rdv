@@ -19,7 +19,7 @@ enum UserRole {
 model UserProfile {
   // user props
   id        String   @id @default(uuid())
-  avatar    String?
+  avatar    String?  @db.LongText
   firstName String
   lastName  String
   email     String   @unique
