@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { isTokenExpired } from '@/lib/utils';
 import { Loader } from '@/components/loader/Loader';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 export default function Login() {
     const [loading, setLoading] = useState(false);
@@ -12,10 +15,10 @@ export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const [ isMounted, setIsMounted ] = useState(false)
+    const [isMounted, setIsMounted] = useState(false)
     const [jwtToken, setJwtToken] = useState<string | null>();
     const [jwtExp, setJwtExp] = useState<string | null>();
-    
+
     const authUser = async () => {
         setLoading(true);
         setError(null);
@@ -78,19 +81,29 @@ export default function Login() {
 
     return (
         <>
-            {!isMounted ? <Loader /> : 
+            {!isMounted ? <Loader /> :
                 (jwtToken ? (window.location.href = '/dashboard') :
-                (
-                    <div className="relative w-full h-full flex justify-center items-center">
-                        <form action="#" onSubmit={authUser} className='bg-[#555555] w-1/2 h-1/2 flex flex-col'>
-                            <input type="email" placeholder='email@gmail.com' onChange={(e) => setEmail(e.target.value)} />
-                            <input type="password" placeholder='Password' onChange={(e) => setPassword(e.target.value)} />
-                            <input type='submit' className='cursor-pointer' onClick={authUser} disabled={loading} value={loading ? 'Loading...' : 'Click'} />
-                            {error && <p>{error}</p>}
-                        </form>
-                    </div>
-                )
-            )}
+                    (
+                        <div className="relative w-full h-full flex justify-center items-center">
+                            <Card className='w-1/3'>
+                                <CardHeader>
+                                    <CardTitle>Login</CardTitle>
+                                    <CardDescription>Log in with your email and password</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <form action="#" onSubmit={authUser} className='w-full h-1/2 flex flex-col items-center gap-4'>
+                                        <Input type="email" placeholder='email@gmail.com' onChange={(e) => setEmail(e.target.value)} />
+                                        <Input type="password" placeholder='Password' onChange={(e) => setPassword(e.target.value)} />
+                                        <Button type='submit' className='cursor-pointer' onClick={authUser} disabled={loading}>
+                                            {loading ? 'Loading...' : 'Login'}
+                                        </Button>
+                                        {error && <p>{error}</p>}
+                                    </form>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    )
+                )}
         </>
     )
 }
