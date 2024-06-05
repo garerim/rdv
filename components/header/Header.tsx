@@ -55,29 +55,27 @@ export default function Header() {
 
     return (
         <>
-            {!isMounted ? <Loader /> : (
-                <header className="fixed left-0 w-full h-[70px] m-0 flex items-center py-2 px-2 z-50 select-none header-glassmorphism ">
-                    <div className="flex items-center gap-4 ml-2">
-                        <h2 className="text-2xl font-bold cursor-pointer m-0 p-0" onClick={() => window.location.href = '/'}>Rendez-vous</h2>
-                        <Separator orientation="vertical" className="relative mx-5 h-[40px] bg-foreground" />
-                        <Button variant={"link"} className="text-foreground" onClick={() => window.location.href = '/dashboard'}>Dashboard</Button>
-                        <Button variant={"link"} className="text-foreground" onClick={() => window.location.href = '/profile'}>Profil</Button>
-                        <Button variant={"link"} className="text-foreground" onClick={() => window.location.href = '/...'}>...</Button>
-                    </div>
-
-                    <div className="ml-auto flex items-center gap-2">
-                        {(!jwtToken ? (
-                            <>
-                                <Button onClick={() => window.location.href = '/login'} variant={"outline"}>Se connecter</Button>
-                                <Button onClick={() => window.location.href = '/register'}>S`inscrire</Button>
-                            </>
+            <header className="fixed left-0 w-full h-[70px] m-0 flex items-center py-2 px-2 z-50 select-none header-glassmorphism ">
+                <div className="flex items-center gap-4">
+                    <h2 className="text-2xl font-bold cursor-pointer m-0 p-0" onClick={() => window.location.href = '/'}>Rendez-vous</h2>
+                    <Separator orientation="vertical" className="relative mx-5 h-[40px] bg-foreground" />
+                    <Button variant={"link"} className="text-foreground" onClick={() => window.location.href = '/dashboard'}>Dashboard</Button>
+                    <Button variant={"link"} className="text-foreground" onClick={() => window.location.href = '/profile'}>Profil</Button>
+                    <Button variant={"link"} className="text-foreground" onClick={() => window.location.href = '/...'}>...</Button>
+                </div>
+                <div className="ml-auto flex items-center gap-2">
+                    {(!jwtToken ? (
+                        <>
+                            <Button onClick={() => window.location.href = '/login'} variant={"outline"}>Se connecter</Button>
+                            <Button onClick={() => window.location.href = '/register'}>S`inscrire</Button>
+                        </>
                         ) : (
                             <Button onClick={() => DisconnectManager() }>Se déconnecter</Button>
-                        ))}
-                        <ThemeToggle />
-                    </div>
-                </header>
-            )}
+                        )
+                    )}
+                    <ThemeToggle />
+                </div>
+            </header>
         </>
     );
 }

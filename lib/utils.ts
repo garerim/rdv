@@ -1,6 +1,5 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
-const jwt = require('jsonwebtoken');
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -34,3 +33,16 @@ export const Disconnect = (jwtStorage : string | null | undefined, jwtExp : stri
 
   return { jwtStorage, jwtExp }
 }
+
+
+export const fetchImageAndConvert = async (imageUrl: string) => {
+  try {
+    const response = await fetch(imageUrl)
+    const arrayBuffer = await response.arrayBuffer()
+    const uint8Array = new Uint8Array(arrayBuffer)
+    return uint8Array
+  } catch (error) {
+    console.error('Erreur lors de la conversion de l\'image:', error)
+  }
+}
+

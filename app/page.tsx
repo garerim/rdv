@@ -1,7 +1,5 @@
 'use client'
 
-import { initialProfile } from "@/lib/initial-profile";
-
 export default function Home() {
 
   return (
