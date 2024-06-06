@@ -85,7 +85,7 @@ export default function Login() {
                 (jwtToken ? (window.location.href = '/dashboard') :
                     (
                         <div className="relative w-full h-full flex justify-center items-center">
-                            <Card className='w-1/3'>
+                            <Card className='w-1/3 max-w-md'>
                                 <CardHeader>
                                     <CardTitle>Login</CardTitle>
                                     <CardDescription>Log in with your email and password</CardDescription>
