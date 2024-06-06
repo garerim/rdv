@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/lib/prisma";
+import argon2 from "argon2";
 
 export const config = {
   api: {
@@ -21,21 +22,10 @@ export default async function handler(
 }
 
 async function putUser(req: NextApiRequest, res: NextApiResponse) {
-  const {
-    id,
-    avatar,
-    firstName,
-    lastName,
-    email,
-    tags,
-    description,
-    socialWebsite,
-    socialYoutube,
-    socialFacebook,
-    socialTwitter,
-    socialLinkedin,
-    socialInstagram,
-  } = req.body.user;
+  const { id, password } = req.body.user;
+
+  const oldPassword = req.body.oldPassword;
+  const newPassword = req.body.newPassword;
 
   const token = req.body.tokenBody;
 
@@ -56,29 +46,22 @@ async function putUser(req: NextApiRequest, res: NextApiResponse) {
       }
     });
 
-  try {
-    const updatedUser = await prisma.userProfile.update({
-      where: { id },
-      data: {
-        avatar,
-        firstName,
-        lastName,
-        email,
-        tags,
-        description,
-        socialWebsite,
-        socialYoutube,
-        socialFacebook,
-        socialTwitter,
-        socialLinkedin,
-        socialInstagram,
-      },
-    });
-    res.status(200).json(updatedUser);
-  } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ error: "Erreur lors de la mise à jour de l'utilisateur" });
+  if (await argon2.verify(password, oldPassword)) {
+    return res.status(401).json({ message: "Ancien mot de passe incorrect" });
+  } else {
+    try {
+      const updatedUser = await prisma.userProfile.update({
+        where: { id },
+        data: {
+          password: await argon2.hash(newPassword),
+        },
+      });
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .json({ error: "Erreur lors de la mise à jour de l'utilisateur" });
+    }
   }
 }
