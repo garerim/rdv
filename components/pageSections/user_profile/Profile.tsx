@@ -1,4 +1,7 @@
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
 import { UserProfile } from "@prisma/client";
 import {
   Facebook,
@@ -6,28 +9,14 @@ import {
   Instagram,
   Linkedin,
   Twitter,
-  Upload,
   Youtube,
 } from "lucide-react";
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef, use } from "react";
 
-export default function Profile() {
+export default function Profile({ user }: { user: UserProfile | undefined }) {
   const [profilUnderModification, setProfilUnderModification] = useState(false);
-  const [user, setUser] = useState<UserProfile | null>(null);
   const [userTemp, setUserTemp] = useState<UserProfile>({} as UserProfile);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const user = fetch("/api/userByJWT", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ tokenBody: localStorage.getItem("jwtToken") }),
-    });
-
-    user.then((res) => res.json()).then((data) => setUser(data));
-  }, []);
 
   const handleSave = () => {
     fetch("/api/users/profil", {
@@ -39,13 +28,10 @@ export default function Profile() {
         tokenBody: localStorage.getItem("jwtToken"),
         user: userTemp,
       }),
-    })
-      .then(() => {
-        setUser(userTemp), setProfilUnderModification(false);
-      })
-      .catch((error) => {
-        console.error("Error:", error), window.location.reload();
-      });
+    }).catch((error) => {
+      console.error("Error:", error);
+    });
+    window.location.reload();
   };
 
   const handleAvatarClick = () => {
@@ -92,28 +78,39 @@ export default function Profile() {
       />
       {!profilUnderModification ? (
         <>
-          <div className="flex flex-col gap-[60px]">
+          <div className="flex flex-col gap-[60px] pb-[120px]">
             <div className="flex gap-10 items-center justify-between">
               <div className="flex gap-10 items-center">
                 <div className="w-[120px] h-[120px]">
                   {user && user.avatar ? (
-                    <img
-                      src={user.avatar}
-                      alt="User Avatar"
-                      className="w-full h-full object-cover rounded-full"
-                    />
+                    <>
+                      <img
+                        src={user.avatar}
+                        alt="User Avatar"
+                        className="w-full h-full object-cover rounded-full"
+                      />
+                    </>
                   ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center border rounded-full">
-                      Avatar
-                    </div>
+                    <Skeleton className="h-[120px] w-[120px] rounded-full" />
                   )}
                 </div>
                 <div className="flex flex-col">
-                  <h1 className="text-2xl font-bold">
-                    {user ? user.firstName : "Unknown"}{" "}
-                    {user ? user.lastName : "Unknown"}
-                  </h1>
-                  <h2 className="text-lg">{user ? user.email : "Unknown"}</h2>
+                  {user ? (
+                    <>
+                      <h1 className="text-2xl font-bold">
+                        {user ? user.firstName : "Unknown"}{" "}
+                        {user ? user.lastName : "Unknown"}
+                      </h1>
+                      <h2 className="text-lg">
+                        {user ? user.email : "Unknown"}
+                      </h2>
+                    </>
+                  ) : (
+                    <>
+                      <Skeleton className="h-8 w-[250px] mb-1" />
+                      <Skeleton className="h-5 w-[300px] mt-1" />
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -129,20 +126,60 @@ export default function Profile() {
               </div>
             </div>
 
+            <div className="flex flex-row gap-4 items-center">
+              <p>{user && user.nbVotesPour ? user.nbVotesPour : 0} likes</p>
+              <Progress
+                value={
+                  user && !user.nbVotesPour && !user.nbVotesContre
+                    ? 50
+                    : (!user?.nbVotesContre || !user?.nbVotesPour
+                        ? 50
+                        : user.nbVotesPour /
+                          (user.nbVotesPour + user.nbVotesContre)) * 100
+                }
+                className="w-[30%] bg-destructive"
+              />
+              <p>
+                {user && user.nbVotesContre ? user.nbVotesContre : 0} dislikes
+              </p>
+            </div>
+
+            <div className="flex flex-row gap-4">
+              {user && user.tags ? (
+                user.tags.split(",").map((tag: any) => (
+                  <Badge
+                    className="w-fit flex flex-row"
+                    variant={"outline"}
+                    key={tag}
+                  >
+                    {tag}
+                  </Badge>
+                ))
+              ) : (
+                <>
+                  <Skeleton className="h-5 w-[250px]" />
+                </>
+              )}
+            </div>
+
             <div className="flex flex-col gap-4">
               <h1 className="text-xl w-fit px-4 py-2 m-0 rounded-lg bg-secondary">
                 Description
               </h1>
-              <p
-                className="ml-5"
-                dangerouslySetInnerHTML={
-                  user && user.description
-                    ? {
-                        __html: user.description,
-                      }
-                    : { __html: "<p>Aucune description</p>" }
-                }
-              ></p>
+              {user ? (
+                <p
+                  className="ml-5"
+                  dangerouslySetInnerHTML={
+                    user.description
+                      ? {
+                          __html: user.description,
+                        }
+                      : { __html: "<p>Aucune description</p>" }
+                  }
+                ></p>
+              ) : (
+                <Skeleton className="h-20 w-[full]" />
+              )}
             </div>
 
             <div className="flex flex-col gap-4">
@@ -240,30 +277,48 @@ export default function Profile() {
               </div>
             </div>
 
-            <div className="flex flex-col gap-4">
-              <h1 className="text-xl w-fit px-4 py-2 m-0 rounded-lg bg-secondary">
-                Curiculum Vitae
-              </h1>
-              <ul className="ml-5">
-                <a href="#">Télécharger le CV</a>
-                <img
-                  className="w-[200px]"
-                  src="https://cdn-images.livecareer.fr/images/lc/common/cv-templates/jt/fr/modele-cv-creatif-1@3x.png"
-                  alt="CV"
-                />
-              </ul>
-            </div>
+            {user && user.role !== "DOCTOR" ? (
+              <></>
+            ) : (
+              <>
+                <div className="flex flex-col gap-4">
+                  <h1 className="text-xl w-fit px-4 py-2 m-0 rounded-lg bg-secondary">
+                    Curiculum Vitae
+                  </h1>
+                  <ul className="ml-5">
+                    <a href="#">Télécharger le CV</a>
+                    <img
+                      className="w-[200px]"
+                      src="https://cdn-images.livecareer.fr/images/lc/common/cv-templates/jt/fr/modele-cv-creatif-1@3x.png"
+                      alt="CV"
+                    />
+                  </ul>
+                </div>
 
-            <div className="flex flex-col gap-4 mb-[100px]">
-              <h1 className="text-xl w-fit px-4 py-2 m-0 rounded-lg bg-secondary">
-                Diplômes
-              </h1>
-              <ul className="ml-5">
-                <li>Diploma 1</li>
-                <li>Diploma 2</li>
-                <li>Diploma 3</li>
-              </ul>
-            </div>
+                <div className="flex flex-col gap-4">
+                  <h1 className="text-xl w-fit px-4 py-2 m-0 rounded-lg bg-secondary">
+                    Diplômes
+                  </h1>
+                  <ul className="ml-5">
+                    {user ? (
+                      <>
+                        <li>Diploma 1</li>
+                        <li>Diploma 2</li>
+                        <li>Diploma 3</li>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex flex-col gap-4">
+                          <Skeleton className="h-5 w-[200px]" />
+                          <Skeleton className="h-5 w-[200px]" />
+                          <Skeleton className="h-5 w-[200px]" />
+                        </div>
+                      </>
+                    )}
+                  </ul>
+                </div>
+              </>
+            )}
           </div>
         </>
       ) : (
@@ -309,6 +364,18 @@ export default function Profile() {
                 value={userTemp ? userTemp.email : "Unknown"}
                 onChange={(e: any) => {
                   setUserTemp({ ...userTemp, email: e.target.value });
+                  //console.log("usertemp: ", userTemp);
+                }}
+              />
+            </div>
+            <div className="flex flex-col">
+              <label htmlFor="tags">Tags</label>
+              <input
+                type="text"
+                placeholder="Séparer les tags par des virgules"
+                value={userTemp && userTemp.tags ? userTemp.tags : ""}
+                onChange={(e: any) => {
+                  setUserTemp({ ...userTemp, tags: e.target.value });
                   //console.log("usertemp: ", userTemp);
                 }}
               />

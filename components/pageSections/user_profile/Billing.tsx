@@ -1,6 +1,7 @@
+import { UserProfile } from "@prisma/client";
 
 
-export default function Billing() {
+export default function Billing({ user }: { user: UserProfile | undefined }) {
 
     return (
         <div>

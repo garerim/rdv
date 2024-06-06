@@ -15,6 +15,7 @@ export default function UserProfile() {
   const [isMounted, setIsMounted] = useState(false);
   const [jwtToken, setJwtToken] = useState<string | null>();
   const [jwtExp, setJwtExp] = useState<string | null>();
+  const [user, setUser] = useState<any>();
 
   const [activeTab, setActiveTab] = useState("profile");
 
@@ -56,6 +57,18 @@ export default function UserProfile() {
     verifyJWT();
   }, [jwtExp, jwtToken]);
 
+  useEffect(() => {
+    const user = fetch("/api/userByJWT", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ tokenBody: localStorage.getItem("jwtToken") }),
+    });
+
+    user.then((res) => res.json()).then((data) => setUser(data));
+  }, [jwtToken]);
+
   return (
     <>
       {!isMounted ? (
@@ -93,10 +106,10 @@ export default function UserProfile() {
                 </Button>
               </div>
               <div className="ml-64 flex-1 pl-10">
-                {activeTab === "profile" && <Profile />}
-                {activeTab === "info_perso" && <PersonalInfo />}
-                {activeTab === "acc_settings" && <AccountSettings />}
-                {activeTab === "factu" && <Billing />}
+                {activeTab === "profile" && <Profile user={user} />}
+                {activeTab === "info_perso" && <PersonalInfo user={user} />}
+                {activeTab === "acc_settings" && <AccountSettings user={user} />}
+                {activeTab === "factu" && <Billing user={user} />}
               </div>
             </div>
           </div>

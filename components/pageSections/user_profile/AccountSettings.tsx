@@ -1,6 +1,7 @@
+import { UserProfile } from "@prisma/client";
 
 
-export default function AccountSettings() {
+export default function AccountSettings({ user }: { user: UserProfile | undefined }) {
 
     return (
         <div>

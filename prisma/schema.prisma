@@ -40,8 +40,8 @@ model UserProfile {
   telephoneFix    String?
 
   // social creds
-  nbVotesPour         Int?
-  nbVotesContre       Int?
+  nbVotesPour         Int?    @default(0)
+  nbVotesContre       Int?    @default(0)
   domainePrincipal    String?
   domainesSecondaires String?
 
@@ -61,8 +61,8 @@ model UserProfile {
   video           String?
 
   // professionel props
-  cv          String?
-  description String?
+  cv          String? @db.LongText
+  description String? @db.LongText
   metier      String?
   tags        String?
   available   Available[]
