@@ -22,6 +22,7 @@ export default async function handler(
 }
 
 async function putUser(req: NextApiRequest, res: NextApiResponse) {
+  // console.log(req.body)
   const { id, password } = req.body.user;
 
   const oldPassword = req.body.oldPassword;
@@ -46,7 +47,7 @@ async function putUser(req: NextApiRequest, res: NextApiResponse) {
       }
     });
 
-  if (await argon2.verify(password, oldPassword)) {
+  if (!(await argon2.verify(password, oldPassword))) {
     return res.status(401).json({ message: "Ancien mot de passe incorrect" });
   } else {
     try {
