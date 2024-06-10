@@ -5,7 +5,7 @@ export default function PersonalInfo({ user }: { user: UserProfile | undefined }
 
     return (
         <div>
-            <p>PersonalInfo</p>
+            <h1>Informations personnelles</h1>
         </div>
     )
 }
