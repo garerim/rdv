@@ -41,7 +41,7 @@ export default function ConversationContent({ conversation }: ConversationConten
 
             </div>
             <div className='flex-1 px-4 flex flex-col-reverse'>
-                <div className='flex flex-col'>
+                <div className='flex flex-col gap-2'>
                     {/* Message */}
                     {conversation.messages.map((message) => (
                         <MessageItem message={message} />

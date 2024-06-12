@@ -1,41 +1,76 @@
 "use client";
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { prisma } from '@/lib/prisma';
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
-import { Send } from 'lucide-react'
-import { useParams } from 'next/navigation';
-import { FormEvent, useState } from 'react'
+import { Send } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+import { Button } from '@/components/ui/button';
+
+const formSchema = z.object({
+    content: z.string().min(1),
+});
 
 export default function MessageForm() {
 
     const params = useParams();
-    const [message, setMessage] = useState("");
+    const router = useRouter();
 
-    const onSubmit = async (event: FormEvent) => {
-        event.preventDefault();
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            content: ""
+        },
+    })
 
+    const isLoading = form.formState.isSubmitting;
+
+    const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-            const response = await axios.post('/api/socket/messages', {
-                content: message,
-                conversationId: params?.conversationID,
-            // userProfileId: user?.id
+            await axios.post("http://localhost:3000/api/socket/messages", {
+                ...values,
+                conversationId: params?.conversationId
             });
-            console.log('Message sent successfully:', response);
-            // Optionally clear the input field
-            setMessage('');
+
+            form.reset();
+            router.refresh();
         } catch (error) {
-            console.error('Error sending message:', error);
+            console.log(error);
         }
     }
 
     return (
-        <form className='w-full p-3 flex items-center gap-2' onSubmit={() => onSubmit}>
-            <Input placeholder='Message...' value={message} onChange={(e) => setMessage(e.target.value)} />
-            <Button type='submit'>
-                <Send />
-            </Button>
-        </form>
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+                <FormField
+                    control={form.control}
+                    name='content'
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormControl>
+                                <div className='relative pb-6 w-full p-3 flex items-center gap-2'>
+                                    <Input
+                                        disabled={isLoading}
+                                        className=''
+                                        placeholder={`Message...`}
+                                        {...field} />
+                                    <Button type='submit'>
+                                        <Send />
+                                    </Button>
+                                </div>
+                            </FormControl>
+                        </FormItem>
+                    )}
+                />
+            </form>
+        </Form>
     )
 }
