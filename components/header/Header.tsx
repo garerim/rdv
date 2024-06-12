@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { Loader } from "../loader/Loader";
 import { Separator } from "../ui/separator";
 import "./header.css"
+import Link from "next/link";
 
 export default function Header() {
     const [ isMounted, setIsMounted ] = useState(false)
@@ -61,6 +62,7 @@ export default function Header() {
                     <Separator orientation="vertical" className="relative mx-5 h-[40px] bg-foreground" />
                     <Button variant={"link"} className="text-foreground" onClick={() => window.location.href = '/dashboard'}>Dashboard</Button>
                     <Button variant={"link"} className="text-foreground" onClick={() => window.location.href = '/profile'}>Profil</Button>
+                    <Button variant={"link"} className="text-foreground" onClick={() => window.location.href = '/conversations'}>Conversations</Button>
                     <Button variant={"link"} className="text-foreground" onClick={() => window.location.href = '/...'}>...</Button>
                 </div>
                 <div className="ml-auto flex items-center gap-2">
