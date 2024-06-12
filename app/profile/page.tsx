@@ -8,7 +8,6 @@ import PersonalInfo from "@/components/pageSections/user_profile/PersonalInfo";
 import Profile from "@/components/pageSections/user_profile/Profile";
 import { Button } from "@/components/ui/button";
 import { isTokenExpired } from "@/lib/utils";
-import { Separator } from "@radix-ui/react-separator";
 import { useEffect, useState } from "react";
 
 export default function UserProfile() {
