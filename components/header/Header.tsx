@@ -60,10 +60,10 @@ export default function Header() {
                 <div className="flex items-center gap-4">
                     <h2 className="text-2xl font-bold cursor-pointer m-0 p-0" onClick={() => window.location.href = '/'}>Rendez-vous</h2>
                     <Separator orientation="vertical" className="relative mx-5 h-[40px] bg-foreground" />
-                    <Button variant={"link"} className="text-foreground" onClick={() => window.location.href = '/dashboard'}>Dashboard</Button>
-                    <Button variant={"link"} className="text-foreground" onClick={() => window.location.href = '/profile'}>Profil</Button>
-                    <Button variant={"link"} className="text-foreground" onClick={() => window.location.href = '/conversations'}>Conversations</Button>
-                    <Button variant={"link"} className="text-foreground" onClick={() => window.location.href = '/...'}>...</Button>
+                    <Link href="dashboard" className="text-secondary-foreground underline-offset-4 hover:underline">Dashboard</Link>
+                    <Link href="profile" className="text-secondary-foreground underline-offset-4 hover:underline">Profil</Link>
+                    <Link href="conversations" className="text-secondary-foreground underline-offset-4 hover:underline">Conversations</Link>
+                    <Link href="..." className="text-secondary-foreground underline-offset-4 hover:underline">...</Link>
                 </div>
                 <div className="ml-auto flex items-center gap-2">
                     {(!jwtToken ? (
