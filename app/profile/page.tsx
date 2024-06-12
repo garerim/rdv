@@ -6,7 +6,6 @@ import AccountSettings from "@/components/pageSections/user_profile/AccountSetti
 import Billing from "@/components/pageSections/user_profile/Billing";
 import PersonalInfo from "@/components/pageSections/user_profile/PersonalInfo";
 import Profile from "@/components/pageSections/user_profile/Profile";
-import Diagnostic from "@/components/pageSections/user_profile/Diagnostic";
 import { Button } from "@/components/ui/button";
 import { isTokenExpired } from "@/lib/utils";
 import { Separator } from "@radix-ui/react-separator";
@@ -105,19 +104,12 @@ export default function UserProfile() {
                 >
                   Facturation
                 </Button>
-                <Button
-                  variant={activeTab === "diagno" ? "secondary" : "ghost"}
-                  onClick={() => setActiveTab("diagno")}
-                >
-                  Diagnostiques et traitements
-                </Button>
               </div>
               <div className="ml-64 flex-1 pl-10">
                 {activeTab === "profile" && <Profile user={user} />}
                 {activeTab === "info_perso" && <PersonalInfo user={user} />}
                 {activeTab === "acc_settings" && <AccountSettings user={user} />}
                 {activeTab === "factu" && <Billing user={user} />}
-                {activeTab === "diagno" && <Diagnostic user={user} />}
               </div>
             </div>
           </div>
