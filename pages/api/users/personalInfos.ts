@@ -23,18 +23,13 @@ export default async function handler(
 async function putUser(req: NextApiRequest, res: NextApiResponse) {
   const {
     id,
-    avatar,
-    firstName,
-    lastName,
-    email,
-    tags,
-    description,
-    socialWebsite,
-    socialYoutube,
-    socialFacebook,
-    socialTwitter,
-    socialLinkedin,
-    socialInstagram,
+    adresseRegion,
+    adresseDepartement,
+    adresseVille,
+    adresseRueEtNumero,
+    telephoneMobile,
+    telephoneFix,
+    metier,
   } = req.body.user;
 
   const token = req.body.tokenBody;
@@ -60,18 +55,13 @@ async function putUser(req: NextApiRequest, res: NextApiResponse) {
     const updatedUser = await prisma.userProfile.update({
       where: { id },
       data: {
-        avatar,
-        firstName,
-        lastName,
-        email,
-        tags,
-        description,
-        socialWebsite,
-        socialYoutube,
-        socialFacebook,
-        socialTwitter,
-        socialLinkedin,
-        socialInstagram,
+        adresseRegion,
+        adresseDepartement,
+        adresseVille,
+        adresseRueEtNumero,
+        telephoneFix,
+        telephoneMobile,
+        metier,
       },
     });
     res.status(200).json(updatedUser);
