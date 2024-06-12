@@ -41,6 +41,18 @@ CREATE TABLE `UserProfile` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `carteFactu` (
+    `id` VARCHAR(191) NOT NULL,
+    `userProfileId` VARCHAR(191) NOT NULL,
+    `nomCarte` VARCHAR(191) NOT NULL,
+    `numeroCarte` VARCHAR(191) NOT NULL,
+    `dateExpiration` VARCHAR(191) NOT NULL,
+    `cvv` VARCHAR(191) NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `JWTToken` (
     `id` VARCHAR(191) NOT NULL,
     `token` LONGTEXT NOT NULL,
@@ -264,6 +276,9 @@ CREATE TABLE `_UserProfileAbonnes` (
     UNIQUE INDEX `_UserProfileAbonnes_AB_unique`(`A`, `B`),
     INDEX `_UserProfileAbonnes_B_index`(`B`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AddForeignKey
+ALTER TABLE `carteFactu` ADD CONSTRAINT `carteFactu_userProfileId_fkey` FOREIGN KEY (`userProfileId`) REFERENCES `UserProfile`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `JWTToken` ADD CONSTRAINT `JWTToken_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `UserProfile`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
