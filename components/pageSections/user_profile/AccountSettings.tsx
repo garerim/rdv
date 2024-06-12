@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { UserProfile } from "@prisma/client";
 import { useState } from "react";
 
@@ -38,7 +39,7 @@ export default function AccountSettings({ user }: { user: UserProfile | undefine
         <div>
             <h1>Paramètres du compte</h1>
             <div>
-                <h1>Modifier le mot de passe</h1>
+                <Label>Modifier le mot de passe</Label>
                 <input type="password" placeholder="Ancien mot de passe" onChange={(e:any) => setOldPassword(e.target.value)} />
                 <div>
                     <input type="password" placeholder="Nouveau mot de passe" onChange={(e:any) => setNewPassword(e.target.value)} />
