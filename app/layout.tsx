@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import Header from "@/components/header/Header";
 import { cn } from "@/lib/utils";
+import { SocketProvider } from "@/components/provider/socket-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,10 +27,12 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Header />
-          <div className="absolute pt-[100px] w-full h-full">
-            {children}
-          </div>
+          <SocketProvider>
+            <Header />
+            <div className="absolute pt-[100px] w-full h-full">
+              {children}
+            </div>
+          </SocketProvider>
         </ThemeProvider>
       </body>
     </html>

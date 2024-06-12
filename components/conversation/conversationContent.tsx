@@ -1,14 +1,16 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Message, UserProfile } from '@prisma/client'
+import { Message, UserProfile, Conversation } from '@prisma/client'
 import { MessageCircleMore, Send } from 'lucide-react'
 import MessageItem from './messageItem'
 import { Separator } from '../ui/separator'
+import MessageForm from './messageForm'
 
 type ConversationContentProps = {
     conversation: {
         id: string;
+        messages: Message[];
         name: string;
         membreSuiveurId: string;
         membreCreateurId: string;
@@ -16,7 +18,6 @@ type ConversationContentProps = {
         updatedAt: Date;
         membreCreateur: UserProfile;
         membreSuiveur: UserProfile;
-        messages: Message[];
     }
 }
 
@@ -53,12 +54,7 @@ export default function ConversationContent({ conversation }: ConversationConten
                     </p>
                 </div>
             </div>
-            <div className='w-full p-3 flex items-center gap-2'>
-                <Input placeholder='Message...' />
-                <Button>
-                    <Send />
-                </Button>
-            </div>
+            <MessageForm />
         </div>
     )
 }
