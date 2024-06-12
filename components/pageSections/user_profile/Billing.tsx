@@ -1,7 +1,7 @@
 import { UserProfile } from "@prisma/client";
 
 
-export default function Billing({ user }: { user: UserProfile | undefined }) {
+export default async function Billing({ user }: { user: UserProfile | undefined }) {
 
     return (
         <div>
