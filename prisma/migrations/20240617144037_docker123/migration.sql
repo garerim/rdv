@@ -28,7 +28,6 @@ CREATE TABLE `UserProfile` (
     `socialLinkedin` VARCHAR(191) NULL,
     `socialInstagram` VARCHAR(191) NULL,
     `video` VARCHAR(191) NULL,
-    `cv` LONGTEXT NULL,
     `description` LONGTEXT NULL,
     `metier` VARCHAR(191) NULL,
     `tags` VARCHAR(191) NULL,
@@ -45,9 +44,21 @@ CREATE TABLE `carteFactu` (
     `id` VARCHAR(191) NOT NULL,
     `userProfileId` VARCHAR(191) NOT NULL,
     `nomCarte` VARCHAR(191) NOT NULL,
+    `numeroCarteQuatreDerniersChiffres` VARCHAR(191) NOT NULL,
     `numeroCarte` VARCHAR(191) NOT NULL,
     `dateExpiration` VARCHAR(191) NOT NULL,
     `cvv` VARCHAR(191) NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `VotePour` (
+    `id` VARCHAR(191) NOT NULL,
+    `userProfileId` VARCHAR(191) NOT NULL,
+    `voteType` INTEGER NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -279,6 +290,9 @@ CREATE TABLE `_UserProfileAbonnes` (
 
 -- AddForeignKey
 ALTER TABLE `carteFactu` ADD CONSTRAINT `carteFactu_userProfileId_fkey` FOREIGN KEY (`userProfileId`) REFERENCES `UserProfile`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `VotePour` ADD CONSTRAINT `VotePour_userProfileId_fkey` FOREIGN KEY (`userProfileId`) REFERENCES `UserProfile`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `JWTToken` ADD CONSTRAINT `JWTToken_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `UserProfile`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
