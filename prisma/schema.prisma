@@ -94,6 +94,7 @@ model UserProfile {
   SuiviMedecin             Suivi[]         @relation("MedecinProfile")
   JWTToken                 JWTToken[]
   carteFactu               carteFactu[]
+  VotePour                 VotePour[]
 }
 
 model carteFactu {
@@ -107,6 +108,19 @@ model carteFactu {
 
   // relations
   userProfile UserProfile @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
+}
+
+model VotePour {
+  id            String @id @default(uuid())
+  userProfileId String
+  voteType      Int
+
+  // timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+
+  // relations
+  user UserProfile @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
 }
 
 model JWTToken {
