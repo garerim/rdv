@@ -69,7 +69,9 @@ export default function Profile({ user }: { user: UserProfile | undefined }) {
     const file = event.target.files?.[0];
     if (file) {
       const base64 = await convertToBase64(file);
-      setUserTemp((userTemp) => ({ ...userTemp, avatar: base64 }));
+      setUserTemp(
+        (userTemp) => (console.log(userTemp), { ...userTemp, avatar: base64 })
+      );
     }
   };
 
@@ -118,18 +120,17 @@ export default function Profile({ user }: { user: UserProfile | undefined }) {
                             <Button
                               className="w-fit"
                               type="submit"
-                              onClick={handleSave}
+                              onClick={() => {
+                                handleSave(), location.reload();
+                              }}
                             >
                               <Save />
                             </Button>
                             <Button
                               type="submit"
-                              onClick={() =>
-                                setUserTemp({
-                                  ...userTemp,
-                                  avatar: user?.avatar ?? null,
-                                })
-                              }
+                              onClick={() => {
+                                location.reload();
+                              }}
                             >
                               <Undo2 />
                             </Button>
@@ -139,7 +140,9 @@ export default function Profile({ user }: { user: UserProfile | undefined }) {
                             <Button
                               className="w-fit"
                               type="submit"
-                              onClick={() => {handleAvatarClick()}}
+                              onClick={() => {
+                                handleAvatarClick();
+                              }}
                             >
                               <Upload />
                             </Button>
