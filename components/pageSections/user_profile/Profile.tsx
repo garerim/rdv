@@ -19,12 +19,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { UserProfile } from "@prisma/client";
 import {
+  Download,
   Facebook,
   Globe,
   Instagram,
   Linkedin,
   PenLine,
+  Save,
   Twitter,
+  Undo,
+  Undo2,
+  Upload,
   Youtube,
 } from "lucide-react";
 import { useState, useRef, use, useEffect } from "react";
@@ -64,7 +69,7 @@ export default function Profile({ user }: { user: UserProfile | undefined }) {
     const file = event.target.files?.[0];
     if (file) {
       const base64 = await convertToBase64(file);
-      setUserTemp((prevUser) => ({ ...prevUser, avatar: base64 }));
+      setUserTemp((userTemp) => ({ ...userTemp, avatar: base64 }));
     }
   };
 
@@ -98,18 +103,62 @@ export default function Profile({ user }: { user: UserProfile | undefined }) {
             <div className="flex flex-col gap-[60px] mb-[120px] w-[80%]">
               <div className="flex flex-col gap-2 items-center justify-center w-full">
                 <div className="w-[120px] h-[120px]">
-                  {user && user.avatar ? (
+                  {userTemp && userTemp.avatar ? (
                     <>
-                      <Image
-                        src={user.avatar}
-                        alt="User Avatar"
-                        className="w-full h-full object-cover rounded-full"
-                        width={120}
-                        height={120}
-                      />
+                      <div className="flex flex-row gap-5 h-fit w-fit items-center">
+                        <Image
+                          src={userTemp.avatar}
+                          alt="User Avatar"
+                          className="w-[120px] h-[120px] object-cover rounded-full"
+                          width={120}
+                          height={120}
+                        ></Image>
+                        {user?.avatar !== userTemp?.avatar ? (
+                          <div className="flex flex-col gap-1 w-fit">
+                            <Button
+                              className="w-fit"
+                              type="submit"
+                              onClick={handleSave}
+                            >
+                              <Save />
+                            </Button>
+                            <Button
+                              type="submit"
+                              onClick={() =>
+                                setUserTemp({
+                                  ...userTemp,
+                                  avatar: user?.avatar ?? null,
+                                })
+                              }
+                            >
+                              <Undo2 />
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col gap-1 w-fit">
+                            <Button
+                              className="w-fit"
+                              type="submit"
+                              onClick={() => {handleAvatarClick()}}
+                            >
+                              <Upload />
+                            </Button>
+                          </div>
+                        )}
+                      </div>
                     </>
                   ) : (
-                    <Skeleton className="h-[120px] w-[120px] rounded-full" />
+                    <div>
+                      <Skeleton
+                        className="h-[120px] w-[120px] rounded-full flex flex-col justify-center items-center cursor-pointer select-none"
+                        onClick={handleAvatarClick}
+                      >
+                        <div className="flex flex-col justify-center items-center">
+                          <p className="text-center">{"Ajoutez une image"}</p>
+                          <Download />
+                        </div>
+                      </Skeleton>
+                    </div>
                   )}
                 </div>
                 <div className="flex flex-col gap-1 items-center">
