@@ -61,7 +61,6 @@ model UserProfile {
   video           String?
 
   // professionel props
-  cv          String?     @db.LongText
   description String?     @db.LongText
   metier      String?
   tags        String?
