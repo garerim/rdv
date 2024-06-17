@@ -35,6 +35,7 @@ async function putUser(req: NextApiRequest, res: NextApiResponse) {
     socialTwitter,
     socialLinkedin,
     socialInstagram,
+    video,
   } = req.body.user;
 
   const token = req.body.tokenBody;
@@ -72,6 +73,7 @@ async function putUser(req: NextApiRequest, res: NextApiResponse) {
         socialTwitter,
         socialLinkedin,
         socialInstagram,
+        video,
       },
     });
     res.status(200).json(updatedUser);

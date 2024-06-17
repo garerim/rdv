@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -15,6 +16,7 @@ import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Textarea } from "@/components/ui/textarea";
 import { UserProfile } from "@prisma/client";
 import {
   Facebook,
@@ -26,6 +28,7 @@ import {
   Youtube,
 } from "lucide-react";
 import { useState, useRef, use, useEffect } from "react";
+import Image from "next/image";
 
 export default function Profile({ user }: { user: UserProfile | undefined }) {
   const [profilUnderModification, setProfilUnderModification] = useState(false);
@@ -80,15 +83,6 @@ export default function Profile({ user }: { user: UserProfile | undefined }) {
 
   return (
     <>
-      <Button
-        className="fixed bottom-5 right-10"
-        onClick={() => {
-          setUserTemp(user as UserProfile),
-            setProfilUnderModification(!profilUnderModification);
-        }}
-      >
-        Modify
-      </Button>
       <input
         type="file"
         accept="image/*"
@@ -99,17 +93,19 @@ export default function Profile({ user }: { user: UserProfile | undefined }) {
       {!profilUnderModification ? (
         <>
           <div className="flex flex-col w-full gap-10 items-center">
-            <Label className="w-full text-3xl">Cartes disponibles</Label>
+            <Label className="w-full text-3xl">Votre profil</Label>
             <Separator className="w-[90%]" />
             <div className="flex flex-col gap-[60px] mb-[120px] w-[80%]">
               <div className="flex flex-col gap-2 items-center justify-center w-full">
                 <div className="w-[120px] h-[120px]">
                   {user && user.avatar ? (
                     <>
-                      <img
+                      <Image
                         src={user.avatar}
                         alt="User Avatar"
                         className="w-full h-full object-cover rounded-full"
+                        width={120}
+                        height={120}
                       />
                     </>
                   ) : (
@@ -167,22 +163,84 @@ export default function Profile({ user }: { user: UserProfile | undefined }) {
               </div>
 
               <div className="flex w-full flex-col gap-4">
-                <Label className="text-3xl w-fit p-0 m-0">Description</Label>
+                <div className="flex flex-row items-center gap-3">
+                  <Label className="text-3xl w-fit p-0 m-0">Description</Label>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <PenLine className="cursor-pointer" />
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <DialogHeader>
+                        <DialogTitle>Editez votre description</DialogTitle>
+                        <DialogDescription>
+                          Ajouter ou modifier votre description et vos tags.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <ScrollArea className="h-80">
+                        <div className="flex flex-col gap-5 w-full pr-[26px] ml-[4px] my-5 justify-center">
+                          <div className="">
+                            <Label htmlFor="description">Description</Label>
+                            <Textarea
+                              placeholder="Entrez une description ici."
+                              className="col-span-3"
+                              value={userTemp?.description ?? ""}
+                              onChange={(e: any) =>
+                                setUserTemp({
+                                  ...userTemp,
+                                  description: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="tags">Tags</Label>
+                            <Input
+                              type="text"
+                              id="tag"
+                              className="col-span-3"
+                              value={userTemp?.tags ?? ""}
+                              onChange={(e: any) =>
+                                setUserTemp({
+                                  ...userTemp,
+                                  tags: e.target.value,
+                                })
+                              }
+                            />
+                            <p className="text-secondary-foreground opacity-40 text-end italic">
+                              Séparer les tags avec des virgules.
+                            </p>
+                          </div>
+                        </div>
+                      </ScrollArea>
+                      <DialogFooter>
+                        <DialogClose asChild>
+                          <Button
+                            onClick={() => {
+                              handleSave();
+                            }}
+                          >
+                            Enregistrer
+                          </Button>
+                        </DialogClose>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </div>
                 {user ? (
                   <>
                     <p
                       className="ml-5"
                       dangerouslySetInnerHTML={
-                        user.description
+                        userTemp?.description
                           ? {
-                              __html: user.description,
+                              __html: userTemp?.description,
                             }
                           : { __html: "<p>Aucune description</p>" }
                       }
                     ></p>
                     <div className="flex w-full flex-row gap-3 ml-5">
-                      {user && user.tags ? (
-                        user.tags.split(",").map((tag: any) => (
+                      {userTemp && userTemp.tags ? (
+                        userTemp.tags.split(",").map((tag: any) => (
                           <Badge
                             className="w-fit flex flex-row"
                             variant={"outline"}
@@ -222,20 +280,22 @@ export default function Profile({ user }: { user: UserProfile | undefined }) {
                       <ScrollArea className="h-80">
                         <div className="flex flex-col gap-5 w-full pr-[26px] ml-[4px] my-5 justify-center">
                           <div className="">
-                            <Label htmlFor="name">Site internet</Label>
+                            <Label htmlFor="website">Site internet</Label>
                             <Input
                               type="text"
-                              id="siteWeb"
+                              id="website"
                               className="col-span-3"
                               value={userTemp?.socialWebsite ?? ""}
-                              onChange={(e: any) => setUserTemp({
-                                ...userTemp,
-                                socialWebsite: e.target.value,
-                              })}
+                              onChange={(e: any) =>
+                                setUserTemp({
+                                  ...userTemp,
+                                  socialWebsite: e.target.value,
+                                })
+                              }
                             />
                           </div>
                           <div className="">
-                            <Label htmlFor="username" className="">
+                            <Label htmlFor="youtube" className="">
                               Youtube
                             </Label>
                             <Input
@@ -243,82 +303,111 @@ export default function Profile({ user }: { user: UserProfile | undefined }) {
                               id="youtube"
                               className="col-span-3"
                               value={userTemp?.socialYoutube ?? ""}
-                              onChange={(e: any) => setUserTemp({
-                                ...userTemp,
-                                socialYoutube: e.target.value,
-                              })}
+                              onChange={(e: any) =>
+                                setUserTemp({
+                                  ...userTemp,
+                                  socialYoutube: e.target.value,
+                                })
+                              }
                             />
                           </div>
                           <div className="">
-                            <Label htmlFor="username" className="">
+                            <Label htmlFor="facebook" className="">
                               Facebook
                             </Label>
                             <Input
                               type="text"
-                              id="youtube"
+                              id="facebook"
                               className="col-span-3"
                               value={userTemp?.socialFacebook ?? ""}
-                              onChange={(e: any) => setUserTemp({
-                                ...userTemp,
-                                socialFacebook: e.target.value,
-                              })}
+                              onChange={(e: any) =>
+                                setUserTemp({
+                                  ...userTemp,
+                                  socialFacebook: e.target.value,
+                                })
+                              }
                             />
                           </div>
                           <div className="">
-                            <Label htmlFor="username" className="">
+                            <Label htmlFor="twitter" className="">
                               Twitter
                             </Label>
                             <Input
                               type="text"
-                              id="youtube"
+                              id="twitter"
                               className="col-span-3"
                               value={userTemp?.socialTwitter ?? ""}
-                              onChange={(e: any) => setUserTemp({
-                                ...userTemp,
-                                socialTwitter: e.target.value,
-                              })}
+                              onChange={(e: any) =>
+                                setUserTemp({
+                                  ...userTemp,
+                                  socialTwitter: e.target.value,
+                                })
+                              }
                             />
                           </div>
                           <div className="">
-                            <Label htmlFor="username" className="">
+                            <Label htmlFor="linkedin" className="">
                               Linkedin
                             </Label>
                             <Input
                               type="text"
-                              id="youtube"
+                              id="linkedin"
                               className="col-span-3"
                               value={userTemp?.socialLinkedin ?? ""}
-                              onChange={(e: any) => setUserTemp({
-                                ...userTemp,
-                                socialLinkedin: e.target.value,
-                              })}
+                              onChange={(e: any) =>
+                                setUserTemp({
+                                  ...userTemp,
+                                  socialLinkedin: e.target.value,
+                                })
+                              }
                             />
                           </div>
                           <div className="">
-                            <Label htmlFor="username" className="">
+                            <Label htmlFor="instagram" className="">
                               Instagram
                             </Label>
                             <Input
                               type="text"
-                              id="youtube"
+                              id="instagram"
                               className="col-span-3"
                               value={userTemp?.socialInstagram ?? ""}
-                              onChange={(e: any) => setUserTemp({
-                                ...userTemp,
-                                socialInstagram: e.target.value,
-                              })}
+                              onChange={(e: any) =>
+                                setUserTemp({
+                                  ...userTemp,
+                                  socialInstagram: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+                          <div className="">
+                            <Label htmlFor="video" className="">
+                              Vidéo de profil
+                            </Label>
+                            <Input
+                              type="text"
+                              id="video"
+                              className="col-span-3"
+                              value={userTemp?.video ?? ""}
+                              onChange={(e: any) =>
+                                setUserTemp({
+                                  ...userTemp,
+                                  video: e.target.value,
+                                })
+                              }
                             />
                           </div>
                         </div>
                       </ScrollArea>
                       <DialogFooter>
-                        <Button
-                          onClick={() => {
-                            handleSave()
-                          }}
-                        >
-                          Enregistrer
-                        </Button>
+                        <DialogClose asChild>
+                          <Button
+                            onClick={() => {
+                              handleSave();
+                            }}
+                          >
+                            Enregistrer
+                          </Button>
+                        </DialogClose>
                       </DialogFooter>
                     </DialogContent>
                   </Dialog>
@@ -412,66 +501,26 @@ export default function Profile({ user }: { user: UserProfile | undefined }) {
                       </Button>
                     </div>
                   </div>
-                  <div className="flex flex-col gap-2 mt-2">
-                    <Label className="text-base">Vidéo de profil</Label>
-                    <iframe
-                      className="w-[560px] h-[315px]"
-                      src="https://www.youtube.com/embed/JK2p-vZNfPA?si=3Q3kL4MOMJhbuY1t"
-                      title="YouTube video player"
-                      allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    ></iframe>
-                  </div>
+                  {userTemp?.video ? (
+                    <div className="flex flex-col gap-2 mt-2">
+                      <Label className="text-base">Vidéo de profil</Label>
+                      <iframe
+                        className="w-[560px] h-[315px]"
+                        src={userTemp ? (userTemp.video as string) : ""}
+                        title="YouTube video player"
+                        allow="accelerometer; gyroscope; picture-in-picture;"
+                      ></iframe>
+                    </div>
+                  ) : (
+                    <></>
+                  )}
                 </div>
               </div>
-
-              {user && user.role !== "DOCTOR" ? (
-                <></>
-              ) : (
-                <>
-                  <div className="flex flex-col gap-4">
-                    <h1 className="text-xl w-fit px-4 py-2 m-0 rounded-lg bg-secondary">
-                      Curiculum Vitae
-                    </h1>
-                    <ul className="ml-5">
-                      <a href="#">Télécharger le CV</a>
-                      <img
-                        className="w-[200px]"
-                        src="https://cdn-images.livecareer.fr/images/lc/common/cv-templates/jt/fr/modele-cv-creatif-1@3x.png"
-                        alt="CV"
-                      />
-                    </ul>
-                  </div>
-
-                  <div className="flex flex-col gap-4">
-                    <h1 className="text-xl w-fit px-4 py-2 m-0 rounded-lg bg-secondary">
-                      Diplômes
-                    </h1>
-                    <ul className="ml-5">
-                      {user ? (
-                        <>
-                          <li>Diploma 1</li>
-                          <li>Diploma 2</li>
-                          <li>Diploma 3</li>
-                        </>
-                      ) : (
-                        <>
-                          <div className="flex flex-col gap-4">
-                            <Skeleton className="h-5 w-[200px]" />
-                            <Skeleton className="h-5 w-[200px]" />
-                            <Skeleton className="h-5 w-[200px]" />
-                          </div>
-                        </>
-                      )}
-                    </ul>
-                  </div>
-                </>
-              )}
             </div>
           </div>
         </>
       ) : (
-        <>
-        </>
+        <></>
       )}
     </>
   );
