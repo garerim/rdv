@@ -5,6 +5,7 @@ import { Loader } from "@/components/loader/Loader";
 import { useEffect, useState } from "react";
 import { isTokenExpired } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 
 export default function Dashboard() {
   const [isMounted, setIsMounted] = useState(false);
@@ -61,8 +62,9 @@ export default function Dashboard() {
             <div className="flex flex-col">
               <Label className="text-3xl">Prendre un rendez-vous</Label>
               <Label className="text-base opacity-60 italic">
-                Trouvez rapidement un créneau disponible avec un médecin.
+                Trouvez rapidement un créneau disponible avec un médecin. 
               </Label>
+              <Separator />
             </div>
           </div>
           <div className="w-full h-52 border rounded-lg"></div>
