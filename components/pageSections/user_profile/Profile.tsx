@@ -17,6 +17,12 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { UserProfile } from "@prisma/client";
 import {
   Download,
@@ -70,7 +76,9 @@ export default function Profile({ user }: { user: UserProfile | undefined }) {
     if (file) {
       const base64 = await convertToBase64(file);
       setUserTemp(
-        (userTemp) => (console.log(userTemp), { ...userTemp, avatar: base64 })
+        (userTemp: any) => (
+          console.log(userTemp), { ...userTemp, avatar: base64 }
+        )
       );
     }
   };
@@ -137,15 +145,24 @@ export default function Profile({ user }: { user: UserProfile | undefined }) {
                           </div>
                         ) : (
                           <div className="flex flex-col gap-1 w-fit">
-                            <Button
-                              className="w-fit"
-                              type="submit"
-                              onClick={() => {
-                                handleAvatarClick();
-                              }}
-                            >
-                              <Upload />
-                            </Button>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    className="w-fit"
+                                    type="submit"
+                                    onClick={() => {
+                                      handleAvatarClick();
+                                    }}
+                                  >
+                                    <Upload />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>{"Modifier l'avatar"}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
                           </div>
                         )}
                       </div>
@@ -258,7 +275,7 @@ export default function Profile({ user }: { user: UserProfile | undefined }) {
                                 })
                               }
                             />
-                            <p className="text-secondary-foreground opacity-40 text-end italic">
+                            <p className="text-secondary-foreground opacity-50 text-end italic">
                               Séparer les tags avec des virgules.
                             </p>
                           </div>

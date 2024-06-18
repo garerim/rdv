@@ -178,7 +178,9 @@ export default function PersonalInfo({
         </div>
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-3">
-            {!modifyJob ? (
+            {userTemp?.role !== "USER" ? (
+              <></>
+            ) : !modifyJob ? (
               <PencilLine
                 className="cursor-pointer"
                 onClick={() => setModifyJob(true)}
@@ -199,15 +201,24 @@ export default function PersonalInfo({
             id="job"
             name="job"
             placeholder="Métier"
-            value={userTemp?.metier as string}
+            value={userTemp?.metier !== "USER" ? userTemp?.role : userTemp.metier}
             onChange={(e: any) => {
               setUserTemp({ ...userTemp, metier: e.target.value });
               //console.log("usertemp: ", userTemp);
             }}
           />
         </div>
-        <Button disabled={user === userTemp} onClick={handleSave} className="fixed bottom-5 right-10 w-32">
-          <input className="cursor-pointer" type="submit" value="Enregistrer" onSubmit={handleSave} />
+        <Button
+          disabled={user === userTemp}
+          onClick={handleSave}
+          className="fixed bottom-5 right-10 w-32"
+        >
+          <input
+            className="cursor-pointer"
+            type="submit"
+            value="Enregistrer"
+            onSubmit={handleSave}
+          />
         </Button>
       </form>
     </div>

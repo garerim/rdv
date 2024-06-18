@@ -14,6 +14,18 @@ import {
 } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PopoverClose } from "@radix-ui/react-popover";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function Billing({ user }: { user: UserProfile | undefined }) {
   const [cards, setCards] = useState<carteFactu[]>([]);
@@ -120,7 +132,9 @@ export default function Billing({ user }: { user: UserProfile | undefined }) {
                 }
               />
             </div>
-            <Button onClick={createCard}>Ajouter la carte</Button>
+            <PopoverClose asChild>
+              <Button onClick={createCard}>Ajouter la carte</Button>
+            </PopoverClose>
           </div>
         </PopoverContent>
       </Popover>
@@ -148,12 +162,33 @@ export default function Billing({ user }: { user: UserProfile | undefined }) {
                       <p>
                         xxxx-xxxx-xxxx-{card.numeroCarteQuatreDerniersChiffres}
                       </p>
-                      <Button
-                        variant={"destructive"}
-                        onClick={() => deleteCard(card.id)}
-                      >
-                        Supprimer la carte
-                      </Button>
+
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant={"destructive"}
+                          >
+                            Supprimer la carte
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Etes-vous sûr de vouloir supprimer cette carte ?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              {
+                                'Cette action est irréversible.' + 
+                                'Cliquez sur "Continuer" pour confirmer.'
+                              }
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Annuler</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => deleteCard(card.id)}>Continuer</AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </div>
                 </Card>
