@@ -17,7 +17,7 @@ const CheckoutButton = ({ amount = 1 }) => {
         headers: { "Content-Type": "application/json" },
       });
       const { sessionId } = await res.json();
-      console.log(res);
+
       const { error } = await stripe.redirectToCheckout({ sessionId });
       console.log(error);
       if (error) {
