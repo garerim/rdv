@@ -1,16 +1,18 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Message, UserProfile, Conversation } from '@prisma/client'
-import { MessageCircleMore, Send } from 'lucide-react'
-import MessageItem from './messageItem'
-import { Separator } from '../ui/separator'
-import MessageForm from './messageForm'
+"use client";
+
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Message, UserProfile } from '@prisma/client';
+import { MessageCircleMore } from 'lucide-react';
+import { SocketIndicator } from '../socket-indicator';
+import { Separator } from '../ui/separator';
+import MessageForm from './messageForm';
+import MessageItem from './messageItem';
+import { useGlobale } from '../provider/globale-provider';
 
 type ConversationContentProps = {
     conversation: {
         id: string;
-        messages: Message[];
+        messages: (Message & { user: UserProfile })[];
         name: string;
         membreSuiveurId: string;
         membreCreateurId: string;
@@ -23,8 +25,9 @@ type ConversationContentProps = {
 
 export default function ConversationContent({ conversation }: ConversationContentProps) {
 
+    const {user} = useGlobale();
     const { name, membreCreateur, membreSuiveur } = conversation;
-    const AmImembreCreateur = membreCreateur.id === "d075b56e-d3b6-4f80-b8ab-95c808093f11"
+    const AmImembreCreateur = membreCreateur.id === user?.id //"d075b56e-d3b6-4f80-b8ab-95c808093f11"
     const membreShow = AmImembreCreateur ? membreSuiveur : membreCreateur
 
     return (
@@ -36,12 +39,13 @@ export default function ConversationContent({ conversation }: ConversationConten
                         <AvatarFallback>{membreShow.firstName.charAt(0).toUpperCase()}{membreShow.lastName.charAt(0).toUpperCase()}</AvatarFallback>
                     </Avatar>
                     <h2 className='font-bold text-xl'>{name}</h2>
+                    <SocketIndicator />
                 </div>
                 <Separator />
 
             </div>
-            <div className='flex-1 px-4 flex flex-col-reverse'>
-                <div className='flex flex-col gap-2'>
+            <div className='flex-1 px-4 flex flex-col-reverse overflow-y-scroll'>
+                <div className='flex flex-col-reverse gap-2 items-start'>
                     {/* Message */}
                     {conversation.messages.map((message) => (
                         <MessageItem message={message} />

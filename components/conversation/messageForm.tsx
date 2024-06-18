@@ -14,6 +14,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
+import { useGlobale } from '@/components/provider/globale-provider';
 
 const formSchema = z.object({
     content: z.string().min(1),
@@ -23,6 +24,7 @@ export default function MessageForm() {
 
     const params = useParams();
     const router = useRouter();
+    const {user} = useGlobale();
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -37,7 +39,8 @@ export default function MessageForm() {
         try {
             await axios.post("http://localhost:3000/api/socket/messages", {
                 ...values,
-                conversationId: params?.conversationId
+                conversationId: params?.conversationId,
+                userProfileId: user.id
             });
 
             form.reset();
