@@ -61,8 +61,7 @@ model UserProfile {
   video           String?
 
   // professionel props
-  cv          String? @db.LongText
-  description String? @db.LongText
+  description String?     @db.LongText
   metier      String?
   tags        String?
   available   Available[]
@@ -94,6 +93,34 @@ model UserProfile {
   SuiviPatient             Suivi[]         @relation("PatientProfile")
   SuiviMedecin             Suivi[]         @relation("MedecinProfile")
   JWTToken                 JWTToken[]
+  carteFactu               carteFactu[]
+  VotePour                 VotePour[]
+}
+
+model carteFactu {
+  id                                String  @id @default(uuid())
+  userProfileId                     String
+  nomCarte                          String
+  numeroCarteQuatreDerniersChiffres String
+  numeroCarte                       String
+  dateExpiration                    String
+  cvv                               String?
+
+  // relations
+  userProfile UserProfile @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
+}
+
+model VotePour {
+  id            String @id @default(uuid())
+  userProfileId String
+  voteType      Int
+
+  // timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+
+  // relations
+  user UserProfile @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
 }
 
 model JWTToken {
