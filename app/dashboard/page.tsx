@@ -4,6 +4,7 @@ import NotConnected from "@/components/notConnected/NotConnected";
 import { Loader } from "@/components/loader/Loader";
 import { useEffect, useState } from "react";
 import { isTokenExpired } from "@/lib/utils";
+import { CarnetPatient } from "@/components/dashboard/carnetPatients";
 
 export default function Dashboard() {
     const [ isMounted, setIsMounted ] = useState(false)
@@ -52,6 +53,7 @@ export default function Dashboard() {
                     (
                         <div>
                             <h1>Dashboard</h1>
+                            <CarnetPatient />
                         </div>
                     )}
                 </div>
