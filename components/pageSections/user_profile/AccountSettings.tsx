@@ -43,7 +43,7 @@ export default function AccountSettings({
   return (
     <div>
       <div className="flex flex-col w-full gap-10 items-center justify-center mb-20">
-        <Label className="w-full text-3xl">Informations personnelles</Label>
+        <Label className="w-full text-3xl">Paramètres du compte</Label>
         <Separator className="w-[90%]" />
         <form method="#" className="flex flex-col gap-8 w-[80%]">
           <Label className="text-lg">Modifier le mot de passe</Label>
