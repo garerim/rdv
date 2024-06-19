@@ -1,17 +1,45 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { UserProfile } from "@prisma/client";
 import {
+  Download,
   Facebook,
   Globe,
   Instagram,
   Linkedin,
+  PenLine,
+  Save,
   Twitter,
+  Undo,
+  Undo2,
+  Upload,
   Youtube,
 } from "lucide-react";
-import { useState, useRef, use } from "react";
+import { useState, useRef, use, useEffect } from "react";
+import Image from "next/image";
 
 export default function Profile({ user }: { user: UserProfile | undefined }) {
   const [profilUnderModification, setProfilUnderModification] = useState(false);
@@ -19,6 +47,7 @@ export default function Profile({ user }: { user: UserProfile | undefined }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSave = () => {
+    console.log("Helloworld");
     fetch("/api/users/profil", {
       method: "PUT",
       headers: {
@@ -31,7 +60,7 @@ export default function Profile({ user }: { user: UserProfile | undefined }) {
     }).catch((error) => {
       console.error("Error:", error);
     });
-    window.location.reload();
+    // window.location.reload();
   };
 
   const handleAvatarClick = () => {
@@ -46,7 +75,11 @@ export default function Profile({ user }: { user: UserProfile | undefined }) {
     const file = event.target.files?.[0];
     if (file) {
       const base64 = await convertToBase64(file);
-      setUserTemp((prevUser) => ({ ...prevUser, avatar: base64 }));
+      setUserTemp(
+        (userTemp: any) => (
+          console.log(userTemp), { ...userTemp, avatar: base64 }
+        )
+      );
     }
   };
 
@@ -59,16 +92,12 @@ export default function Profile({ user }: { user: UserProfile | undefined }) {
     });
   };
 
+  useEffect(() => {
+    setUserTemp(user as UserProfile);
+  }, [user]);
+
   return (
     <>
-      <Button
-        onClick={() => {
-          setUserTemp(user as UserProfile),
-            setProfilUnderModification(!profilUnderModification);
-        }}
-      >
-        Modify
-      </Button>
       <input
         type="file"
         accept="image/*"
@@ -78,32 +107,90 @@ export default function Profile({ user }: { user: UserProfile | undefined }) {
       />
       {!profilUnderModification ? (
         <>
-          <div className="flex flex-col gap-[60px] pb-[120px]">
-            <div className="flex gap-10 items-center justify-between">
-              <div className="flex gap-10 items-center">
+          <div className="flex flex-col w-full gap-10 items-center">
+            <Label className="w-full text-3xl">Votre profil</Label>
+            <Separator className="w-[90%]" />
+            <div className="flex flex-col gap-[60px] mb-[120px] w-[80%]">
+              <div className="flex flex-col gap-2 items-center justify-center w-full">
                 <div className="w-[120px] h-[120px]">
-                  {user && user.avatar ? (
+                  {userTemp && userTemp.avatar ? (
                     <>
-                      <img
-                        src={user.avatar}
-                        alt="User Avatar"
-                        className="w-full h-full object-cover rounded-full"
-                      />
+                      <div className="flex flex-row gap-5 h-fit w-fit items-center">
+                        <Image
+                          src={userTemp.avatar}
+                          alt="User Avatar"
+                          className="w-[120px] h-[120px] object-cover rounded-full"
+                          width={120}
+                          height={120}
+                        ></Image>
+                        {user?.avatar !== userTemp?.avatar ? (
+                          <div className="flex flex-col gap-1 w-fit">
+                            <Button
+                              className="w-fit"
+                              type="submit"
+                              onClick={() => {
+                                handleSave(), location.reload();
+                              }}
+                            >
+                              <Save />
+                            </Button>
+                            <Button
+                              type="submit"
+                              onClick={() => {
+                                location.reload();
+                              }}
+                            >
+                              <Undo2 />
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col gap-1 w-fit">
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    className="w-fit"
+                                    type="submit"
+                                    onClick={() => {
+                                      handleAvatarClick();
+                                    }}
+                                  >
+                                    <Upload />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>{"Modifier l'avatar"}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </div>
+                        )}
+                      </div>
                     </>
                   ) : (
-                    <Skeleton className="h-[120px] w-[120px] rounded-full" />
+                    <div>
+                      <Skeleton
+                        className="h-[120px] w-[120px] rounded-full flex flex-col justify-center items-center cursor-pointer select-none"
+                        onClick={handleAvatarClick}
+                      >
+                        <div className="flex flex-col justify-center items-center">
+                          <p className="text-center">{"Ajoutez une image"}</p>
+                          <Download />
+                        </div>
+                      </Skeleton>
+                    </div>
                   )}
                 </div>
-                <div className="flex flex-col">
+                <div className="flex flex-col gap-1 items-center">
                   {user ? (
                     <>
-                      <h1 className="text-2xl font-bold">
-                        {user ? user.firstName : "Unknown"}{" "}
-                        {user ? user.lastName : "Unknown"}
-                      </h1>
-                      <h2 className="text-lg">
-                        {user ? user.email : "Unknown"}
-                      </h2>
+                      <Label className="text-3xl font-bold flex">
+                        {user ? user.firstName : "Erreur de chargement..."}{" "}
+                        {user ? user.lastName : "Erreur de chargement..."}
+                      </Label>
+                      <Label className="">
+                        {user ? user.email : "Erreur de chargement..."}
+                      </Label>
                     </>
                   ) : (
                     <>
@@ -112,355 +199,397 @@ export default function Profile({ user }: { user: UserProfile | undefined }) {
                     </>
                   )}
                 </div>
+                <div className="flex gap-1 mt-3 w-full justify-center">
+                  <div className="flex flex-col items-center px-4 py-2 bg-secondary rounded-lg cursor-pointer">
+                    <Label className="text-lg">Abonnés 1,2k</Label>
+                  </div>
+                  <div className="flex flex-col items-center px-4 py-2 bg-secondary rounded-lg cursor-pointer">
+                    <Label className="text-lg">Abonnements 1,2k</Label>
+                  </div>
+                </div>
               </div>
-            </div>
 
-            <div className="flex gap-10 w-full justify-center">
-              <div className="flex flex-col items-center px-4 py-2 bg-secondary rounded-lg cursor-pointer">
-                <h1 className="text-lg">Abonnés</h1>
-                <p>1.2k</p>
-              </div>
-              <div className="flex flex-col items-center px-4 py-2 bg-secondary rounded-lg cursor-pointer">
-                <h1 className="text-lg">Abonnements</h1>
-                <p>1.2k</p>
-              </div>
-            </div>
-
-            <div className="flex flex-row gap-4 items-center">
-              <p>{user && user.nbVotesPour ? user.nbVotesPour : 0} likes</p>
-              <Progress
-                value={
-                  user && !user.nbVotesPour && !user.nbVotesContre
-                    ? 50
-                    : (!user?.nbVotesContre || !user?.nbVotesPour
-                        ? 50
-                        : user.nbVotesPour /
-                          (user.nbVotesPour + user.nbVotesContre)) * 100
-                }
-                className="w-[30%] bg-destructive"
-              />
-              <p>
-                {user && user.nbVotesContre ? user.nbVotesContre : 0} dislikes
-              </p>
-            </div>
-
-            <div className="flex flex-row gap-4">
-              {user && user.tags ? (
-                user.tags.split(",").map((tag: any) => (
-                  <Badge
-                    className="w-fit flex flex-row"
-                    variant={"outline"}
-                    key={tag}
-                  >
-                    {tag}
-                  </Badge>
-                ))
-              ) : (
-                <>
-                  <Skeleton className="h-5 w-[250px]" />
-                </>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-4">
-              <h1 className="text-xl w-fit px-4 py-2 m-0 rounded-lg bg-secondary">
-                Description
-              </h1>
-              {user ? (
-                <p
-                  className="ml-5"
-                  dangerouslySetInnerHTML={
-                    user.description
-                      ? {
-                          __html: user.description,
-                        }
-                      : { __html: "<p>Aucune description</p>" }
+              <div>
+                <Progress
+                  value={
+                    user && !user.nbVotesPour && !user.nbVotesContre
+                      ? 50
+                      : (!user?.nbVotesContre || !user?.nbVotesPour
+                          ? 50
+                          : user.nbVotesPour /
+                            (user.nbVotesPour + user.nbVotesContre)) * 100
                   }
-                ></p>
-              ) : (
-                <Skeleton className="h-20 w-[full]" />
-              )}
-            </div>
+                  className="w-full bg-destructive"
+                />
+                <div className="w-full flex justify-around mt-3">
+                  <Label className="w-fit">
+                    {user && user.nbVotesPour ? user.nbVotesPour : 0} likes
+                  </Label>
+                  <Label className="w-fit">
+                    {user && user.nbVotesPour ? user.nbVotesPour : 0} dislikes
+                  </Label>
+                </div>
+              </div>
 
-            <div className="flex flex-col gap-4">
-              <h1 className="text-xl w-fit px-4 py-2 m-0 rounded-lg bg-secondary">
-                Description
-              </h1>
-              <div className="flex flex-col gap-2 ml-5">
-                <div className="flex gap-5">
-                  <div className="flex items-center">
-                    <Globe />
-                    <Button
-                      variant={"link"}
-                      disabled={user ? !user.socialWebsite : true}
-                      onClick={() =>
-                        window.open(user ? (user.socialWebsite as string) : "")
-                      }
-                    >
-                      Site internet
-                    </Button>
-                  </div>
-                  <div className="flex items-center">
-                    <Youtube />
-                    <Button
-                      variant={"link"}
-                      disabled={user ? !user.socialYoutube : true}
-                      onClick={() =>
-                        window.open(user ? (user.socialYoutube as string) : "")
-                      }
-                    >
-                      Youtube
-                    </Button>
-                  </div>
-                  <div className="flex items-center">
-                    <Facebook />
-                    <Button
-                      variant={"link"}
-                      disabled={user ? !user.socialFacebook : true}
-                      onClick={() =>
-                        window.open(user ? (user.socialFacebook as string) : "")
-                      }
-                    >
-                      Facebook
-                    </Button>
-                  </div>
+              <div className="flex w-full flex-col gap-4">
+                <div className="flex flex-row items-center gap-3">
+                  <Label className="text-3xl w-fit p-0 m-0">Description</Label>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <PenLine className="cursor-pointer" />
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <DialogHeader>
+                        <DialogTitle>Editez votre description</DialogTitle>
+                        <DialogDescription>
+                          Ajouter ou modifier votre description et vos tags.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <ScrollArea className="h-80">
+                        <div className="flex flex-col gap-5 w-full pr-[26px] ml-[4px] my-5 justify-center">
+                          <div className="">
+                            <Label htmlFor="description">Description</Label>
+                            <Textarea
+                              placeholder="Entrez une description ici."
+                              className="col-span-3"
+                              value={userTemp?.description ?? ""}
+                              onChange={(e: any) =>
+                                setUserTemp({
+                                  ...userTemp,
+                                  description: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="tags">Tags</Label>
+                            <Input
+                              type="text"
+                              id="tag"
+                              className="col-span-3"
+                              value={userTemp?.tags ?? ""}
+                              onChange={(e: any) =>
+                                setUserTemp({
+                                  ...userTemp,
+                                  tags: e.target.value,
+                                })
+                              }
+                            />
+                            <p className="text-secondary-foreground opacity-50 text-end italic">
+                              Séparer les tags avec des virgules.
+                            </p>
+                          </div>
+                        </div>
+                      </ScrollArea>
+                      <DialogFooter>
+                        <DialogClose asChild>
+                          <Button
+                            onClick={() => {
+                              handleSave();
+                            }}
+                          >
+                            Enregistrer
+                          </Button>
+                        </DialogClose>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                 </div>
-                <div className="flex gap-5">
-                  <div className="flex items-center">
-                    <Twitter />
-                    <Button
-                      variant={"link"}
-                      disabled={user ? !user.socialTwitter : true}
-                      onClick={() =>
-                        window.open(user ? (user.socialTwitter as string) : "")
+                {user ? (
+                  <>
+                    <p
+                      className="ml-5"
+                      dangerouslySetInnerHTML={
+                        userTemp?.description
+                          ? {
+                              __html: userTemp?.description,
+                            }
+                          : { __html: "<p>Aucune description</p>" }
                       }
-                    >
-                      Twitter
-                    </Button>
-                  </div>
-                  <div className="flex items-center">
-                    <Linkedin />
-                    <Button
-                      variant={"link"}
-                      disabled={user ? !user.socialLinkedin : true}
-                      onClick={() =>
-                        window.open(user ? (user.socialLinkedin as string) : "")
-                      }
-                    >
-                      Linkedin
-                    </Button>
-                  </div>
-                  <div className="flex items-center">
-                    <Instagram />
-                    <Button
-                      variant={"link"}
-                      disabled={user ? !user.socialInstagram : true}
-                      onClick={() =>
-                        window.open(
-                          user ? (user.socialInstagram as string) : ""
-                        )
-                      }
-                    >
-                      Instagram
-                    </Button>
-                  </div>
+                    ></p>
+                    <div className="flex w-full flex-row gap-3 ml-5">
+                      {userTemp && userTemp.tags ? (
+                        userTemp.tags.split(",").map((tag: any) => (
+                          <Badge
+                            className="w-fit flex flex-row"
+                            variant={"outline"}
+                            key={tag}
+                          >
+                            {tag}
+                          </Badge>
+                        ))
+                      ) : (
+                        <>
+                          <Skeleton className="h-5 w-[250px]" />
+                        </>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <Skeleton className="h-20 w-[full]" />
+                )}
+              </div>
+
+              <div className="flex w-full flex-col gap-4">
+                <div className="flex flex-row items-center gap-3">
+                  <Label className="text-3xl w-fit p-0 m-0">
+                    Réseaux sociaux
+                  </Label>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <PenLine className="cursor-pointer" />
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <DialogHeader>
+                        <DialogTitle>Editez vos médias</DialogTitle>
+                        <DialogDescription>
+                          Ajouter les liens de vos réseaux sociaux.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <ScrollArea className="h-80">
+                        <div className="flex flex-col gap-5 w-full pr-[26px] ml-[4px] my-5 justify-center">
+                          <div className="">
+                            <Label htmlFor="website">Site internet</Label>
+                            <Input
+                              type="text"
+                              id="website"
+                              className="col-span-3"
+                              value={userTemp?.socialWebsite ?? ""}
+                              onChange={(e: any) =>
+                                setUserTemp({
+                                  ...userTemp,
+                                  socialWebsite: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+                          <div className="">
+                            <Label htmlFor="youtube" className="">
+                              Youtube
+                            </Label>
+                            <Input
+                              type="text"
+                              id="youtube"
+                              className="col-span-3"
+                              value={userTemp?.socialYoutube ?? ""}
+                              onChange={(e: any) =>
+                                setUserTemp({
+                                  ...userTemp,
+                                  socialYoutube: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+                          <div className="">
+                            <Label htmlFor="facebook" className="">
+                              Facebook
+                            </Label>
+                            <Input
+                              type="text"
+                              id="facebook"
+                              className="col-span-3"
+                              value={userTemp?.socialFacebook ?? ""}
+                              onChange={(e: any) =>
+                                setUserTemp({
+                                  ...userTemp,
+                                  socialFacebook: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+                          <div className="">
+                            <Label htmlFor="twitter" className="">
+                              Twitter
+                            </Label>
+                            <Input
+                              type="text"
+                              id="twitter"
+                              className="col-span-3"
+                              value={userTemp?.socialTwitter ?? ""}
+                              onChange={(e: any) =>
+                                setUserTemp({
+                                  ...userTemp,
+                                  socialTwitter: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+                          <div className="">
+                            <Label htmlFor="linkedin" className="">
+                              Linkedin
+                            </Label>
+                            <Input
+                              type="text"
+                              id="linkedin"
+                              className="col-span-3"
+                              value={userTemp?.socialLinkedin ?? ""}
+                              onChange={(e: any) =>
+                                setUserTemp({
+                                  ...userTemp,
+                                  socialLinkedin: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+                          <div className="">
+                            <Label htmlFor="instagram" className="">
+                              Instagram
+                            </Label>
+                            <Input
+                              type="text"
+                              id="instagram"
+                              className="col-span-3"
+                              value={userTemp?.socialInstagram ?? ""}
+                              onChange={(e: any) =>
+                                setUserTemp({
+                                  ...userTemp,
+                                  socialInstagram: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+                          <div className="">
+                            <Label htmlFor="video" className="">
+                              Vidéo de profil
+                            </Label>
+                            <Input
+                              type="text"
+                              id="video"
+                              className="col-span-3"
+                              value={userTemp?.video ?? ""}
+                              onChange={(e: any) =>
+                                setUserTemp({
+                                  ...userTemp,
+                                  video: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+                        </div>
+                      </ScrollArea>
+                      <DialogFooter>
+                        <DialogClose asChild>
+                          <Button
+                            onClick={() => {
+                              handleSave();
+                            }}
+                          >
+                            Enregistrer
+                          </Button>
+                        </DialogClose>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                 </div>
-                <div className="flex flex-col gap-2">
-                  <h1>Vidéo de profil</h1>
-                  <iframe
-                    className="w-[560px] h-[315px]"
-                    src="https://www.youtube.com/embed/JK2p-vZNfPA?si=3Q3kL4MOMJhbuY1t"
-                    title="YouTube video player"
-                    allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  ></iframe>
+                <div className="flex flex-col gap-2 ml-5 w-full items-center">
+                  <div className="flex gap-5 w-fit">
+                    <div className="flex items-center">
+                      <Globe />
+                      <Button
+                        variant={"link"}
+                        disabled={userTemp ? !userTemp.socialWebsite : true}
+                        onClick={() =>
+                          window.open(
+                            userTemp ? (userTemp.socialWebsite as string) : ""
+                          )
+                        }
+                      >
+                        Site internet
+                      </Button>
+                    </div>
+                    <div className="flex items-center">
+                      <Youtube />
+                      <Button
+                        variant={"link"}
+                        disabled={userTemp ? !userTemp.socialYoutube : true}
+                        onClick={() =>
+                          window.open(
+                            userTemp ? (userTemp.socialYoutube as string) : ""
+                          )
+                        }
+                      >
+                        Youtube
+                      </Button>
+                    </div>
+                    <div className="flex items-center">
+                      <Facebook />
+                      <Button
+                        variant={"link"}
+                        disabled={userTemp ? !userTemp.socialFacebook : true}
+                        onClick={() =>
+                          window.open(
+                            userTemp ? (userTemp.socialFacebook as string) : ""
+                          )
+                        }
+                      >
+                        Facebook
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="flex gap-5 w-fit">
+                    <div className="flex items-center">
+                      <Twitter />
+                      <Button
+                        variant={"link"}
+                        disabled={userTemp ? !userTemp.socialTwitter : true}
+                        onClick={() =>
+                          window.open(
+                            userTemp ? (userTemp.socialTwitter as string) : ""
+                          )
+                        }
+                      >
+                        Twitter
+                      </Button>
+                    </div>
+                    <div className="flex items-center">
+                      <Linkedin />
+                      <Button
+                        variant={"link"}
+                        disabled={userTemp ? !userTemp.socialLinkedin : true}
+                        onClick={() =>
+                          window.open(
+                            userTemp ? (userTemp.socialLinkedin as string) : ""
+                          )
+                        }
+                      >
+                        Linkedin
+                      </Button>
+                    </div>
+                    <div className="flex items-center">
+                      <Instagram />
+                      <Button
+                        variant={"link"}
+                        disabled={userTemp ? !userTemp.socialInstagram : true}
+                        onClick={() =>
+                          window.open(
+                            userTemp ? (userTemp.socialInstagram as string) : ""
+                          )
+                        }
+                      >
+                        Instagram
+                      </Button>
+                    </div>
+                  </div>
+                  {userTemp?.video ? (
+                    <div className="flex flex-col gap-2 mt-2">
+                      <Label className="text-base">Vidéo de profil</Label>
+                      <iframe
+                        className="w-[560px] h-[315px]"
+                        src={userTemp ? (userTemp.video as string) : ""}
+                        title="YouTube video player"
+                        allow="accelerometer; gyroscope; picture-in-picture;"
+                      ></iframe>
+                    </div>
+                  ) : (
+                    <></>
+                  )}
                 </div>
               </div>
             </div>
-
-            {user && user.role !== "DOCTOR" ? (
-              <></>
-            ) : (
-              <>
-                <div className="flex flex-col gap-4">
-                  <h1 className="text-xl w-fit px-4 py-2 m-0 rounded-lg bg-secondary">
-                    Curiculum Vitae
-                  </h1>
-                  <ul className="ml-5">
-                    <a href="#">Télécharger le CV</a>
-                    <img
-                      className="w-[200px]"
-                      src="https://cdn-images.livecareer.fr/images/lc/common/cv-templates/jt/fr/modele-cv-creatif-1@3x.png"
-                      alt="CV"
-                    />
-                  </ul>
-                </div>
-
-                <div className="flex flex-col gap-4">
-                  <h1 className="text-xl w-fit px-4 py-2 m-0 rounded-lg bg-secondary">
-                    Diplômes
-                  </h1>
-                  <ul className="ml-5">
-                    {user ? (
-                      <>
-                        <li>Diploma 1</li>
-                        <li>Diploma 2</li>
-                        <li>Diploma 3</li>
-                      </>
-                    ) : (
-                      <>
-                        <div className="flex flex-col gap-4">
-                          <Skeleton className="h-5 w-[200px]" />
-                          <Skeleton className="h-5 w-[200px]" />
-                          <Skeleton className="h-5 w-[200px]" />
-                        </div>
-                      </>
-                    )}
-                  </ul>
-                </div>
-              </>
-            )}
           </div>
         </>
       ) : (
-        <>
-          <Button variant={"destructive"} onClick={() => handleAvatarClick()}>
-            Cancel
-          </Button>
-          <div className="flex flex-col gap-10">
-            <div>
-              <Button onClick={handleAvatarClick}>Modifier avatar</Button>
-              <img
-                src={userTemp.avatar ?? ""}
-                alt="User Avatar"
-                className="w-[120px] h-[120px] object-cover rounded-full"
-              />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="firstName">Prénom</label>
-              <input
-                type="text"
-                value={userTemp.firstName}
-                onChange={(e: any) => {
-                  setUserTemp({ ...userTemp, firstName: e.target.value });
-                  //console.log("usertemp: ", userTemp);
-                }}
-              />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="lastName">Nom</label>
-              <input
-                type="text"
-                value={userTemp ? userTemp.lastName : "Unknown"}
-                onChange={(e: any) => {
-                  setUserTemp({ ...userTemp, lastName: e.target.value });
-                  //console.log("usertemp: ", userTemp);
-                }}
-              />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="email">Email</label>
-              <input
-                type="email"
-                value={userTemp ? userTemp.email : "Unknown"}
-                onChange={(e: any) => {
-                  setUserTemp({ ...userTemp, email: e.target.value });
-                  //console.log("usertemp: ", userTemp);
-                }}
-              />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="tags">Tags</label>
-              <input
-                type="text"
-                placeholder="Séparer les tags par des virgules"
-                value={userTemp && userTemp.tags ? userTemp.tags : ""}
-                onChange={(e: any) => {
-                  setUserTemp({ ...userTemp, tags: e.target.value });
-                  //console.log("usertemp: ", userTemp);
-                }}
-              />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="description">Description</label>
-              <textarea
-                value={userTemp ? userTemp.description ?? "" : "Unknown"}
-                onChange={(e: any) => {
-                  setUserTemp({ ...userTemp, description: e.target.value });
-                  //console.log("usertemp: ", userTemp);
-                }}
-              ></textarea>
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="socialWebsite">Site internet</label>
-              <input
-                type="text"
-                value={userTemp ? userTemp.socialWebsite ?? "" : "Unknown"}
-                onChange={(e: any) => {
-                  setUserTemp({ ...userTemp, socialWebsite: e.target.value });
-                  //console.log("usertemp: ", userTemp);
-                }}
-              />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="socialYoutube">Youtube</label>
-              <input
-                type="text"
-                value={userTemp ? userTemp.socialYoutube ?? "" : "Unknown"}
-                onChange={(e: any) => {
-                  setUserTemp({ ...userTemp, socialYoutube: e.target.value });
-                  //console.log("usertemp: ", userTemp);
-                }}
-              />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="socialFacebook">Facebook</label>
-              <input
-                type="text"
-                value={userTemp ? userTemp.socialFacebook ?? "" : "Unknown"}
-                onChange={(e: any) => {
-                  setUserTemp({ ...userTemp, socialFacebook: e.target.value });
-                  //console.log("usertemp: ", userTemp);
-                }}
-              />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="socialTwitter">Twitter</label>
-              <input
-                type="text"
-                value={userTemp ? userTemp.socialTwitter ?? "" : "Unknown"}
-                onChange={(e: any) => {
-                  setUserTemp({ ...userTemp, socialTwitter: e.target.value });
-                  //console.log("usertemp: ", userTemp);
-                }}
-              />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="socialLinkedin">Linkedin</label>
-              <input
-                type="text"
-                value={userTemp ? userTemp.socialLinkedin ?? "" : "Unknown"}
-                onChange={(e: any) => {
-                  setUserTemp({ ...userTemp, socialLinkedin: e.target.value });
-                  //console.log("usertemp: ", userTemp);
-                }}
-              />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="socialInstagram">Instagram</label>
-              <input
-                type="text"
-                value={userTemp ? userTemp.socialInstagram ?? "" : "Unknown"}
-                onChange={(e: any) => {
-                  setUserTemp({ ...userTemp, socialInstagram: e.target.value });
-                  //console.log("usertemp: ", userTemp);
-                }}
-              />
-            </div>
-          </div>
-          <Button onClick={() => handleSave()}>
-            Enregistrer les modifications
-          </Button>
-        </>
+        <></>
       )}
     </>
   );
