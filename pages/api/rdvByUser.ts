@@ -1,31 +1,30 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "@/lib/prisma";
-import argon2 from "argon2";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   if (req.method === "GET") {
-    return getSuivisByUser(req, res);
+    return getRdvByUser(req, res);
   } else {
     res.status(405).json({ message: "Méthode non autorisée" });
   }
 }
 
-async function getSuivisByUser(req: NextApiRequest, res: NextApiResponse) {
+async function getRdvByUser(req: NextApiRequest, res: NextApiResponse) {
     try {
         const {id} = req.query
-        const suivis = await prisma.suivi.findMany({
+        const rdvs = await prisma.rendezVous.findMany({
         where:{
-            patientProfileId : id as string
+            patientId : id as string
         }
         })
-      res.status(200).json(suivis);
+      res.status(200).json(rdvs);
     } catch (error) {
       console.error(error);
       res
         .status(500)
-        .json({ error: "Erreur lors de la récupération des suivis" });
+        .json({ error: "Erreur lors de la récupération des rendez-vous" });
     }
   }
