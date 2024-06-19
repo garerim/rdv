@@ -56,6 +56,24 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  Trash2
+} from "lucide-react"
+
 
 
 const rdvTypes = [
@@ -107,6 +125,7 @@ export default function Page() {
 
   // Utilisé par le Dialog
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [modifyRdvOpen, setModifyRdvOpen] = useState<boolean>(false);
   
   // Infos pour la résa d'un rdv
   const [selectedRdv, setSelectedRdv] = useState<any>();
@@ -215,24 +234,34 @@ export default function Page() {
     const medecinName = fullNameOf(allMedecins?.find((medecin) => medecin.id === rdv.professionelId)) || "Chargement...";
 
     return (
-      <TableRow>
-        <TableCell className="font-medium flex justify-center">
-          <TooltipProvider>
-            <Tooltip delayDuration={100}>
-              <TooltipTrigger>
-                <div className={`rounded-full w-4 h-4 ${rdv.etat === 'A_VENIR' ? 'bg-orange-400' : rdv.etat === 'PASSE' ? 'bg-green-600' : 'bg-red-600'}`} />
-              </TooltipTrigger>
-              <TooltipContent>{rdv.etat === 'A_VENIR' ? 'A venir' : rdv.etat === 'PASSE' ? 'Passé' : 'Annulé'}</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </TableCell>
-        <TableCell>{formatDate(rdv.startDate)}</TableCell>
-        <TableCell>{formatHour(rdv.startDate)}</TableCell>
-        <TableCell>{rdv.duration} min</TableCell>
-        <TableCell>{medecinName}</TableCell>
-        <TableCell>{rdv.typeRendezVous}</TableCell>
-        <TableCell>{rdv.prix} €</TableCell>
-      </TableRow>
+      <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <TableRow onClick={(e:any) => {manageAppointment(rdv)}} className='cursor-pointer'>
+          <TableCell className="font-medium flex justify-center">
+            <TooltipProvider>
+              <Tooltip delayDuration={100}>
+                <TooltipTrigger>
+                  <div className={`rounded-full w-4 h-4 ${rdv.etat === 'A_VENIR' ? 'bg-orange-400' : rdv.etat === 'PASSE' ? 'bg-green-600' : 'bg-red-600'}`} />
+                </TooltipTrigger>
+                <TooltipContent>{rdv.etat === 'A_VENIR' ? 'A venir' : rdv.etat === 'PASSE' ? 'Passé' : 'Annulé'}</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </TableCell>
+          <TableCell>{formatDate(rdv.startDate)}</TableCell>
+          <TableCell>{formatHour(rdv.startDate)}</TableCell>
+          <TableCell>{rdv.duration} min</TableCell>
+          <TableCell>{medecinName}</TableCell>
+          <TableCell>{rdv.typeRendezVous}</TableCell>
+          <TableCell>{rdv.prix} €</TableCell>
+        </TableRow>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56">
+          <DropdownMenuItem onClick={(e:any) => deleteRdv(rdv.id)}>
+            <Trash2 className="mr-2 h-4 w-4" />
+            <span>Annuler</span>
+          </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
     );
   };
 
@@ -294,7 +323,7 @@ export default function Page() {
   }
 
   const createRdv = async () => {
-    const response = await fetch('/api/createNewRdv', {
+    const response = await fetch('/api/manageRdv', {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json',
@@ -321,12 +350,33 @@ export default function Page() {
   }
   }
 
+  const deleteRdv = async (rdvId: any) => {
+    const response = await fetch(`/api/manageRdv?rdvId=${rdvId}`, {
+      method: 'DELETE',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+    });
+  
+    if (response.ok) {
+      console.log('Rendez-vous supprimé avec succès');
+      getAllRdvByUser()
+    } else {
+      const errorData = await response.json();
+      console.log(errorData.error || 'Erreur lors de la suppression du rendez-vous');
+  }
+  }
+
+  const manageAppointment = (rdv: any) => {
+      console.log(rdv.id)
+  }
+
   return (
     <div className='pl-8 pr-8'>
-      <div className='flex justify-end p-4'>
-        <div className='w-1/6'></div>
-        <h2 className="text-3xl text-center font-extrabold w-full">Rendez-vous</h2>
-        <div className='w-1/6 flex justify-end'>
+      <div className='flex justify-between p-4'>
+        <div className='w-1/6 justify-start'><Button variant="outline" onClick={getAllRdvByUser}>Actualiser</Button></div>
+        <h2 className="text-3xl text-center font-extrabold">Rendez-vous</h2>
+        <div className='w-1/6 justify-end flex'>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
               <Button variant="outline" onClick={resetBooking}>Prendre Rendez-vous</Button>

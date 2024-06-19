@@ -8,6 +8,8 @@ export default async function handler(
 ) {
   if (req.method === "POST") {
     return createRDV(req, res);
+  } else if (req.method === "DELETE"){
+    return deleteRDV(req, res);
   } else {
     res.status(405).json({ message: "Méthode non autorisée" });
   }
@@ -37,5 +39,24 @@ async function createRDV(req: NextApiRequest, res: NextApiResponse) {
       res
         .status(500)
         .json({ error: "Erreur lors de la création du rendez-vous" });
+    }
+  }
+
+  async function deleteRDV(req: NextApiRequest, res: NextApiResponse) {
+    const { rdvId} = req.query;
+  
+    try {
+      const newRDV = await prisma.rendezVous.delete({
+        where:{
+          id: rdvId as string
+        },
+
+      });
+      res.status(200).json(newRDV);
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .json({ error: "Erreur lors de la suppression du rendez-vous" });
     }
   }
