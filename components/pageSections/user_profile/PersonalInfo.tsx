@@ -54,7 +54,7 @@ export default function PersonalInfo({
     <div className="flex flex-col w-full gap-10 items-center mb-20">
       <Label className="w-full text-3xl">Informations personnelles</Label>
       <Separator className="w-[90%]" />
-      <form action="#" className="flex flex-col gap-5 w-[80%]">
+      <form action="#" method="POST" className="flex flex-col gap-5 w-[80%]">
         <div className="flex gap-2 items-center">
           <Label className="text-lg">Date de naissance:</Label>
           <Label>
