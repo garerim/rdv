@@ -3,6 +3,7 @@
 import ConversationItem from "@/components/conversation/conversationItem";
 import { AddConversationModal } from "@/components/modals/add-conversation-modal";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import {
     ResizableHandle,
     ResizablePanel,
@@ -62,10 +63,10 @@ export default function MesConversations({ children }: { children: React.ReactNo
 
     if (!conversations) {
         return (
-            <>
-                <h2 className="font-bold mb-6">Mes Conversations</h2>
-                <p>Vous n'avez pas encore de conversation</p>
-            </>
+            <div className="flex flex-col">
+                <Label className="font-bold mb-6 select-none">Mes Conversations</Label>
+                <Label>{"Vous n'avez pas encore de conversation"}</Label>
+            </div>
         )
     }
 
@@ -74,7 +75,7 @@ export default function MesConversations({ children }: { children: React.ReactNo
             <AddConversationModal isModalOpen={isOpenModal} handleClose={handleClose} />
             <ResizablePanelGroup direction="horizontal" className="w-full">
                 <ResizablePanel defaultSize={15} minSize={11} maxSize={20} className="flex flex-col items-center border-t gap-2">
-                    <h2 className="font-bold mb-2">Mes Conversations</h2>
+                    <Label className="font-bold mb-2 mt-4">Mes Conversations</Label>
                     <Button
                         onClick={() => setIsOpenModal(true)}
                     >
@@ -84,7 +85,7 @@ export default function MesConversations({ children }: { children: React.ReactNo
                     <div>
                         {conversations ? conversations.map((conversation) => (
                             <ConversationItem key={conversation.id} conversation={conversation} />
-                        )) : "Vous n'avez pas de conversation"}
+                        )) : <Label>{"Vous n'avez pas de conversation"}</Label>}
                     </div>
                 </ResizablePanel>
                 <ResizableHandle withHandle />
