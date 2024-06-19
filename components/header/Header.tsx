@@ -61,6 +61,7 @@ export default function Header() {
                     <Separator orientation="vertical" className="relative mx-5 h-[40px] bg-foreground" />
                     <Button variant={"link"} className="text-foreground" onClick={() => window.location.href = '/dashboard'}>Dashboard</Button>
                     <Button variant={"link"} className="text-foreground" onClick={() => window.location.href = '/profile'}>Profil</Button>
+                    <Button variant={"link"} className="text-foreground" onClick={() => window.location.href = '/billing'}>Billing</Button>
                     <Button variant={"link"} className="text-foreground" onClick={() => window.location.href = '/...'}>...</Button>
                 </div>
                 <div className="ml-auto flex items-center gap-2">

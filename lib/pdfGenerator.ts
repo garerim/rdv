@@ -1,4 +1,3 @@
-// lib/pdfGenerator.ts
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 
 export const generatePdf = async (data: { name: string; email: string }) => {

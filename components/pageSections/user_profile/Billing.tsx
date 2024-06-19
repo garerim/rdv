@@ -1,6 +1,6 @@
-import { UserProfile } from "@prisma/client";
+import React, { useRef } from 'react';
 
-
+/*
 export default function Billing({ user }: { user: UserProfile | undefined }) {
 
     return (
@@ -8,4 +8,4 @@ export default function Billing({ user }: { user: UserProfile | undefined }) {
             <p>Billing</p>
         </div>
     )
-}
+}*/
