@@ -1,6 +1,7 @@
 "use client"
 
-import * as React from "react"
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -12,11 +13,11 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+} from "@tanstack/react-table";
+import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -25,8 +26,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -34,35 +35,16 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 
 // Define the Patient type
 export type Patient = {
-  id: string
-  firstName: string
-  lastName: string
-  dateOfBirth: string
-  email: string
-}
-
-// Example data
-const data: Patient[] = [
-  {
-    id: "1",
-    firstName: "John",
-    lastName: "Doe",
-    dateOfBirth: "1990-01-01",
-    email: "john.doe@example.com",
-  },
-  {
-    id: "2",
-    firstName: "Jane",
-    lastName: "Doe",
-    dateOfBirth: "1992-02-02",
-    email: "jane.doe@example.com",
-  },
-  // Add more patients as needed
-]
+  id: string;
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  email: string;
+};
 
 // Define the columns for the table
 export const columns: ColumnDef<Patient>[] = [
@@ -72,7 +54,7 @@ export const columns: ColumnDef<Patient>[] = [
       <Checkbox
         checked={
           table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected()) 
+          table.getIsSomePageRowsSelected()
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
@@ -102,24 +84,22 @@ export const columns: ColumnDef<Patient>[] = [
   },
   {
     accessorKey: "email",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Email
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Email
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
   },
   {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const patient = row.original
+      const patient = row.original;
 
       return (
         <DropdownMenu>
@@ -140,23 +120,35 @@ export const columns: ColumnDef<Patient>[] = [
             <DropdownMenuItem>Voir détails patients</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      )
+      );
     },
   },
-]
+];
 
 export function CarnetPatient() {
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = useState({});
+  const router = useRouter();
 
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  )
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = React.useState({})
+  useEffect(() => {
+    const fetchPatients = async () => {
+      try {
+        const response = await fetch('/api/patients');
+        const data = await response.json();
+        setPatients(data);
+      } catch (error) {
+        console.error('Error fetching patients:', error);
+      }
+    };
+
+    fetchPatients();
+  }, []);
 
   const table = useReactTable({
-    data,
+    data: patients,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -172,7 +164,11 @@ export function CarnetPatient() {
       columnVisibility,
       rowSelection,
     },
-  })
+  });
+
+  const handleRowClick = (id: string) => {
+    router.push(`/patient/${id}`);
+  };
 
   return (
     <div className="w-full">
@@ -223,7 +219,7 @@ export function CarnetPatient() {
                   >
                     {column.id}
                   </DropdownMenuCheckboxItem>
-                )
+                );
               })}
           </DropdownMenuContent>
         </DropdownMenu>
@@ -233,18 +229,16 @@ export function CarnetPatient() {
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  )
-                })}
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>
@@ -254,6 +248,8 @@ export function CarnetPatient() {
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  onClick={() => handleRowClick(row.original.id)}
+                  className="cursor-pointer"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
@@ -303,5 +299,5 @@ export function CarnetPatient() {
         </div>
       </div>
     </div>
-  )
+  );
 }
