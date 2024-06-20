@@ -15,11 +15,26 @@ export default async function handler(
 async function getRdvByUser(req: NextApiRequest, res: NextApiResponse) {
     try {
         const {id} = req.query
-        const rdvs = await prisma.rendezVous.findMany({
-        where:{
-            patientId : id as string
-        }
+        const requester = await prisma.userProfile.findFirst({
+          where:{
+            id: id as string
+          }
         })
+        var rdvs = undefined;
+        if (requester?.role === "USER"){
+          rdvs = await prisma.rendezVous.findMany({
+            where:{
+                patientId : id as string
+            }
+            })
+        } else if(requester?.role === "DOCTOR"){
+          rdvs = await prisma.rendezVous.findMany({
+            where:{
+                professionelId : id as string
+            }
+            })
+        }
+        
       res.status(200).json(rdvs);
     } catch (error) {
       console.error(error);
