@@ -6,7 +6,6 @@ import Header from "@/components/header/Header";
 import { cn } from "@/lib/utils";
 import { SocketProvider } from "@/components/provider/socket-provider";
 import { GlobaleProvider } from "@/components/provider/globale-provider";
-import { QueryProvider } from "@/components/provider/query-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,16 +28,14 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <QueryProvider>
-            <GlobaleProvider>
-              <SocketProvider>
-                <Header />
-                <div className="absolute pt-[100px] w-full h-full">
-                  {children}
-                </div>
-              </SocketProvider>
-            </GlobaleProvider>
-          </QueryProvider>
+          <GlobaleProvider>
+            <SocketProvider>
+              <Header />
+              <div className="absolute pt-[100px] w-full h-full">
+                {children}
+              </div>
+            </SocketProvider>
+          </GlobaleProvider>
         </ThemeProvider>
       </body>
     </html>
