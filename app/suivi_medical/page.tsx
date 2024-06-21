@@ -9,6 +9,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import { Label } from '@/components/ui/label';
 
 const VerticalBarMain = () => {
     return <div className="w-1 min-h-full bg-cyan-800 mr-4 text-cyan-800">.</div>;
@@ -97,16 +98,22 @@ const getDocNameById = async (id: string) => {
     }
 };
 
+const NoDataComponent = () => {
+    return <div className='flex justify-center p-10'><Label>Aucun diagnostique n'a encore été enregistré</Label></div>
+}
+
   return (
     <div className="mr-20 ml-20">
         <p className="text-3xl text-center font-extrabold">Diagnostiques et traitements</p>
+        {suivis ? suivis.length > 0 ?
         <Accordion type="single" collapsible>
-            {suivis?.map((suivi) => (
+            {suivis.map((suivi) => (
                 <>
                     <AccordionCard key={suivi.id} itemNumber={suivi.id} suivi={suivi}/>
                 </>
             ))}
-        </Accordion> 
+        </Accordion>
+        :<NoDataComponent/>:<NoDataComponent/>}
     </div>
   )
 }

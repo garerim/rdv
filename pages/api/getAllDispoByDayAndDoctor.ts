@@ -43,6 +43,10 @@ async function getAvailableTimeSlots(req: NextApiRequest, res: NextApiResponse) 
 
 async function getAllRdvByDay(id: string, day: string) {
     const startDate = new Date(day);
+    startDate.setHours(0);
+    startDate.setMinutes(0);
+    startDate.setSeconds(0);
+    startDate.setMilliseconds(0);
     const endDate = new Date(startDate);
     endDate.setDate(endDate.getDate() + 1);
 
@@ -55,6 +59,7 @@ async function getAllRdvByDay(id: string, day: string) {
             },
         },
     });
+
     return docs;
 }
 

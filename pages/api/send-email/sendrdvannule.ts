@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import { NextApiRequest, NextApiResponse } from "next";
+import { prisma } from "@/lib/prisma";
 
 export default async function handler(
   req: NextApiRequest,
@@ -8,7 +9,23 @@ export default async function handler(
   if (req.method === "POST") {
     const data = req.body;
 
-    const { userEmail, startDate, description, docName } = data;
+    const {
+      professionelId,
+      patientId,
+      startDate,
+      duration,
+      typeRendezVous,
+      description,
+      prix,
+    } = data;
+
+    const docName = await prisma.userProfile.findUnique({
+      where: { id: professionelId },
+    }).then((user) => user?.firstName + " " + user?.lastName);
+
+    const userEmail = await prisma.userProfile.findUnique({
+      where: { id: patientId },
+    }).then((user) => user?.email);
 
     let transporter = nodemailer.createTransport({
       service: "gmail",
@@ -21,15 +38,17 @@ export default async function handler(
     let mailOptions = {
       from: '"Rendez-vous" <rendezvous.medical.sae@gmail.com>',
       to: userEmail,
-      subject: "Rappel de rendez-vous médical",
-      text: `Vous avez un rendez-vous médical demain avec le Dr. ${docName}. Veuillez consulter votre compte pour plus de détails.`,
+      subject: `Rendez-vous médical annulé : le ${new Date(startDate).toLocaleString(
+        "fr-FR"
+      )}`,
+      text: `Votre rendez-vous médical avec le Dr. ${docName} à été annulé. Veuillez consulter votre compte pour plus de détails.`,
       html: `
         <!DOCTYPE html>
         <html lang="fr">
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Rappel de rendez-vous médical</title>
+          <title>Annulation de rendez-vous médical</title>
           <style>
             body {
               font-family: Arial, sans-serif;
@@ -72,16 +91,22 @@ export default async function handler(
         <body>
           <div class="email-container">
             <div class="email-header">
-              <h1>Rappel de rendez-vous médical</h1>
+              <h1>Annulation de rendez-vous médical</h1>
             </div>
             <div class="email-body">
               <p>Bonjour,</p>
-              <p>Vous avez un rendez-vous médical demain avec le Dr. ${docName}. Voici les détails de votre rendez-vous :</p>
+              <p>Votre rendez-vous médical du ${new Date(startDate).toLocaleString("fr-FR")} avec le Dr. ${docName} a été annulé.</p>
               <div class="appointment-details">
                 <p>Date et heure: ${new Date(startDate).toLocaleString(
                   "fr-FR"
                 )}</p>
+                <p>Motif de consultation: ${typeRendezVous}</p>
                 <p>Description: ${description}</p>
+                <p>Durée: ${duration} minutes</p>
+                <p>Prix: ${prix} €</p>
+              </div>
+              <div class="appointment-details">
+                <p>Vous seriez remboursé dans les plus brefs délais.</p>
               </div>
               <p>Veuillez consulter votre compte pour plus de détails.</p>
               <p>Cordialement,<br>L'équipe de Rendez-vous</p>
