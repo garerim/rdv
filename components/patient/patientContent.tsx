@@ -1,27 +1,37 @@
 "use client"
 import { Avatar } from '@/components/ui/avatar';
 import { Separator } from '../ui/separator';
-import React, { useState } from 'react';
-import AntecedentFormDialog from './antecedentForm';
+import React from 'react';
+import SuiviForm from './suiviForm';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
+import AntecedentFormDialog from './antecedentForm';
+
+type SuiviPatient = {
+  id: string;
+  diagnostique: string | null;
+  traitement: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  medecinProfileId: string | null;
+};
 
 type Antecedent = {
   id: string;
   type: 'CHIRURGICAL' | 'FAMILIAUX' | 'PSYCHOLOGIQUES' | 'TOXICOLOGIQUES' | 'TRAUMATIQUES' | 'VACCINAUX' | 'ALLERGIQUES' | 'AUTRES';
-  details: string;
+  details: string | null;
   dateAntecedent: Date;
-  nomMedecin: string;
+  nomMedecin: string | null;
 };
 
 type PatientContentProps = {
   patient: {
-    id: string | null;
+    id: string;
     avatar: string | null;
     firstName: string;
     lastName: string;
     email: string | null;
-    birthDate: Date | null;
+    birthDate: Date;
     sexe: string | null;
     adresseRegion: string | null;
     adresseDepartement: string | null;
@@ -32,17 +42,18 @@ type PatientContentProps = {
     metier: string | null;
   };
   antecedents: Antecedent[];
+  suiviPatients: SuiviPatient[];
 };
 
-const PatientContent: React.FC<PatientContentProps> = ({ patient, antecedents }) => {
-  const router = useRouter()
+const PatientContent: React.FC<PatientContentProps> = ({ patient, antecedents, suiviPatients }) => {
+  const router = useRouter();
 
   const handleFormSubmit = () => {
-    router.refresh;
+    router.refresh();
   };
 
-  const handleDelete = async (id: string) => {
-    const response = await fetch('/api/patient/delete-antecedent', {
+  const handleDelete = async (id: string, type: 'antecedent' | 'suiviPatient') => {
+    const response = await fetch(`/api/patient/delete-${type}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -51,10 +62,10 @@ const PatientContent: React.FC<PatientContentProps> = ({ patient, antecedents })
     });
 
     if (response.ok) {
-      alert('Antécédent supprimé avec succès');
-      router.refresh;
+      alert(`${type.charAt(0).toUpperCase() + type.slice(1)} supprimé avec succès`);
+      router.refresh();
     } else {
-      alert('Erreur lors de la suppression de l\'antécédent');
+      alert(`Erreur lors de la suppression de ${type}`);
     }
   };
 
@@ -108,7 +119,7 @@ const PatientContent: React.FC<PatientContentProps> = ({ patient, antecedents })
                 <Button
                   variant="outline"
                   className="mt-2"
-                  onClick={() => handleDelete(antecedent.id)}
+                  onClick={() => handleDelete(antecedent.id, 'antecedent')}
                 >
                   Supprimer
                 </Button>
@@ -118,7 +129,35 @@ const PatientContent: React.FC<PatientContentProps> = ({ patient, antecedents })
             <p className="text-gray-600">Aucun antécédent trouvé.</p>
           )}
         </div>
-        <AntecedentFormDialog patientId={patient.id || ''} onFormSubmit={handleFormSubmit} />
+        <AntecedentFormDialog patientId={patient.id} onFormSubmit={handleFormSubmit} />
+        <div className="flex flex-col gap-2">
+          <span className="font-bold text-lg">Suivis</span>
+          {suiviPatients.length > 0 ? (
+            suiviPatients.map((suiviPatient: SuiviPatient) => (
+              <div key={suiviPatient.id} className="border p-2 rounded">
+                <p className="font-semibold">{suiviPatient.diagnostique}</p>
+                <p>{suiviPatient.traitement}</p>
+                <p className="text-gray-600 text-sm">
+                  {new Date(suiviPatient.createdAt).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                  })} - Médecin: {suiviPatient.medecinProfileId}
+                </p>
+                <Button
+                  variant="outline"
+                  className="mt-2"
+                  onClick={() => handleDelete(suiviPatient.id, 'suiviPatient')}
+                >
+                  Supprimer
+                </Button>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-600">Aucun suivis de Patient trouvé.</p>
+          )}
+        </div>
+        <SuiviForm patientProfileId={patient.id} onFormSubmit={handleFormSubmit} />
       </div>
     </div>
   );

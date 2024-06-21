@@ -38,6 +38,16 @@ export default async function PatientIdPageProps({ params }: PatientIdPageProps)
           nomMedecin: true,
         },
       },
+      SuiviPatient: {
+        select: {
+          id: true,
+          diagnostique: true,
+          traitement: true,
+          createdAt: true,
+          updatedAt: true,
+          medecinProfileId: true,
+        }
+      },
     },
   });
 
@@ -47,7 +57,7 @@ export default async function PatientIdPageProps({ params }: PatientIdPageProps)
 
   return (
     <>
-      <PatientContent patient={patient} antecedents={patient.Antecedents} />
+      <PatientContent patient={patient} antecedents={patient.Antecedents} suiviPatients={patient.SuiviPatient} />
     </>
   );
 }
