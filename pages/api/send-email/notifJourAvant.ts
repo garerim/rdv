@@ -76,7 +76,7 @@ export default async function handler(
             </div>
             <div class="email-body">
               <p>Bonjour,</p>
-              <p>Vous avez un rendez-vous médical demain avec le Dr. ${docName}. Voici les détails de votre rendez-vous :</p>
+              <p>Vous avez un rendez-vous médical avec le Dr. ${docName}. Voici les détails de votre rendez-vous :</p>
               <div class="appointment-details">
                 <p>Date et heure: ${new Date(startDate).toLocaleString(
                   "fr-FR"

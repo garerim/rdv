@@ -21,38 +21,26 @@ export default async function handler(
         },
       });
 
-      rdvs.forEach(async (element) => {
-        console.log(element)
-        const user = await prisma.userProfile
-          .findUnique({
-            where: {
-              id: element.patientId,
-            },
-          })
-          .then(async (user) => {
-            await prisma.userProfile
-              .findUnique({
-                where: {
-                  id: element.professionelId,
-                },
-              })
-              .then((docteur) => {
-                // console.log(element.startDate as unknown as string),
-                res.status(200).json({
-                  userEmail: user?.email,
-                  startDate: element?.startDate,
-                  description: element?.description,
-                  docName: docteur?.firstName + " " + docteur?.lastName
-                });
-              }).catch(() => res.status(500));
-          }).catch(() => res.status(500))
-      })
-    } catch (error) {
-      console.error("Error fetching rendezVous:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+      const result = await Promise.all(rdvs.map(async (element) => {
+        const user = await prisma.userProfile.findUnique({
+          where: { id: element.patientId },
+        });
+
+        const docteur = await prisma.userProfile.findUnique({
+          where: { id: element.professionelId },
+        });
+
+        return {
+          userEmail: user?.email,
+          startDate: element?.startDate,
+          description: element?.description,
+          docName: docteur?.firstName + " " + docteur?.lastName
+        };
+      }));
+
+      res.status(200).json(result)
+    } catch {
+      res.status(400)
     }
-  } else {
-    res.setHeader("Allow", ["GET"]);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }
