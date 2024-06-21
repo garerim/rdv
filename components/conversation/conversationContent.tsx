@@ -3,15 +3,16 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Message, UserProfile } from '@prisma/client';
 import { MessageCircleMore, PenBoxIcon, Trash2 } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import { DeleteConversationModal } from '../modals/delete-conversation-modal';
+import { EditConversationModal } from '../modals/edit-conversation-modal';
+import { useGlobale } from '../provider/globale-provider';
+import { useSocket } from '../provider/socket-provider';
 import { SocketIndicator } from '../socket-indicator';
+import { Button } from '../ui/button';
 import { Separator } from '../ui/separator';
 import MessageForm from './messageForm';
 import MessageItem from './messageItem';
-import { useGlobale } from '../provider/globale-provider';
-import { Button } from '../ui/button';
-import { EditConversationModal } from '../modals/edit-conversation-modal';
-import { useState } from 'react';
-import { DeleteConversationModal } from '../modals/delete-conversation-modal';
 
 type ConversationContentProps = {
     conversation: {
@@ -27,10 +28,48 @@ type ConversationContentProps = {
     }
 }
 
+type MessageWithUser = {
+    id: string;
+    userProfileId: string;
+    conversationId: string;
+    text: string;
+    isLiked: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+    user: UserProfile;
+}
+
+
 export default function ConversationContent({ conversation }: ConversationContentProps) {
 
     const [isModalOpenEdit, setIsModalOpenEdit] = useState<boolean>(false)
     const [isModalOpenDelete, setIsModalOpenDelete] = useState<boolean>(false)
+    const [messages, setMessages] = useState<MessageWithUser[]>([]) // conversation.messages
+    const queryKey = `chat:${conversation.id}`;
+    const addKey = `chat:${conversation.id}:messages`;
+    const { socket } = useSocket()
+
+    const updateMessages = useCallback((message: MessageWithUser) => {
+        console.log(message);
+        setMessages((prevMessages) => [...prevMessages, message]);
+    }, []);
+
+    useEffect(() => {
+        if (conversation.messages) {
+            setMessages(conversation.messages);
+        }
+    }, [conversation.messages]);
+
+    useEffect(() => {
+        if (!socket) return;
+
+        socket.on(addKey, updateMessages);
+        
+
+        return () => {
+            socket.off(addKey, updateMessages);
+        };
+    }, [socket, addKey, messages, queryKey, updateMessages]);
 
     const handleClose = () => {
         setIsModalOpenEdit(false)
@@ -69,9 +108,12 @@ export default function ConversationContent({ conversation }: ConversationConten
                 <div className='flex-1 px-4 flex flex-col-reverse overflow-y-scroll'>
                     <div className='flex flex-col-reverse gap-2 items-start'>
                         {/* Message */}
-                        {conversation.messages.map((message) => (
-                            <MessageItem message={message} />
+                        {messages.map((message, index) => (
+                            <MessageItem key={index} message={message} />
                         ))}
+                        {/* {conversation.messages.map((message) => (
+                            <MessageItem key={message.id} message={message} />
+                        ))} */}
                     </div>
                     <div className='mb-6'>
                         <MessageCircleMore className="h-16 w-16 mb-4" />

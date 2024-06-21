@@ -30,7 +30,18 @@ export default async function handler (
 
         const conversationKey = `chat:${conversationId}:messages`;
 
-        res?.socket?.server?.io?.emit(conversationKey, message);
+        const user = await prisma.userProfile.findUnique({
+            where: {
+                id: userProfileId
+            }
+        });
+
+        const messageWithUser = {
+            ...message,
+            user: user
+        }
+
+        res?.socket?.server?.io?.emit(conversationKey, messageWithUser);
 
         return res.status(200).json(message);
 
