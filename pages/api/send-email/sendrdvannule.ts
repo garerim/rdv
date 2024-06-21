@@ -21,8 +21,10 @@ export default async function handler(
     let mailOptions = {
       from: '"Rendez-vous" <rendezvous.medical.sae@gmail.com>',
       to: userEmail,
-      subject: "Rappel de rendez-vous médical",
-      text: `Vous avez un rendez-vous médical demain avec le Dr. ${docName}. Veuillez consulter votre compte pour plus de détails.`,
+      subject: `Rendez-vous médical annulé : le ${new Date(startDate).toLocaleString(
+        "fr-FR"
+      )}`,
+      text: `Votre rendez-vous médical avec le Dr. ${docName} à été annulé. Veuillez consulter votre compte pour plus de détails.`,
       html: `
         <!DOCTYPE html>
         <html lang="fr">
@@ -76,13 +78,7 @@ export default async function handler(
             </div>
             <div class="email-body">
               <p>Bonjour,</p>
-              <p>Vous avez un rendez-vous médical avec le Dr. ${docName}. Voici les détails de votre rendez-vous :</p>
-              <div class="appointment-details">
-                <p>Date et heure: ${new Date(startDate).toLocaleString(
-                  "fr-FR"
-                )}</p>
-                <p>Description: ${description}</p>
-              </div>
+              <p>Votre rendez-vous médical du ${new Date(startDate).toLocaleString("fr-FR")} avec le Dr. ${docName} a été annulé.</p>
               <p>Veuillez consulter votre compte pour plus de détails.</p>
               <p>Cordialement,<br>L'équipe de Rendez-vous</p>
             </div>
