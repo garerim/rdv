@@ -18,6 +18,7 @@ export type MessageItemProps = {
 }
 
 function convertDate(date: Date) {
+  date = new Date(date);
   const today = new Date();
 
   const isToday = date.getDate() === today.getDate() &&
