@@ -56,7 +56,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-
+import CheckoutButton from "@/components/checkout/index";
+import { useRouter } from 'next/navigation';
+import { Amarante } from 'next/font/google';
 
 const rdvTypes = [
   {
@@ -90,6 +92,12 @@ const formatHour = (dateString: any) => {
   });
 };
 
+enum prices{
+  CONSULTATION = 25,
+  EXAMEN = 50,
+  AUTRE = 25
+}
+
 export default function Page() {
   // Variables globales de la page
   const [jwtToken, setJwtToken] = useState<string | null>();
@@ -113,6 +121,7 @@ export default function Page() {
   const [selectedDoc, setSelectedDoc] = useState<any>();
   const [selectedType, setSelectedType] = useState<any>();
   const [selectedDescription, setSelectedDescription] = useState<string>("");
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -348,6 +357,7 @@ export default function Page() {
                     onSelect={setDate}
                     className="rounded-md border"
                   />
+                  
                 ) : rdvStep === 2 ? 
                   <>
                     <Popover open={open} onOpenChange={setOpen}>
@@ -478,7 +488,14 @@ export default function Page() {
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={createRdv}>Continue</AlertDialogAction>
+                          {/*<AlertDialogAction onClick={createRdv}>Continue</AlertDialogAction>*/}
+                          <CheckoutButton
+                            amount={prices[value]}
+                            description={selectedDescription}
+                            doc={selectedDoc}
+                            selectedTime={selectedRdv}
+                            type={selectedType}
+                          />
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>
@@ -503,9 +520,9 @@ export default function Page() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {rdvs?.map((rdv) => (
+          {/*{rdvs?.map((rdv) => (
             <LigneTableauListRDV key={rdv.id} rdv={rdv} />
-          ))}
+          ))}*/}
         </TableBody>
       </Table>
     </div>

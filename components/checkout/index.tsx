@@ -1,5 +1,5 @@
 import { loadStripe } from '@stripe/stripe-js';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import Devis from './devis';
 import RendezVous, {EtatRendezVous, TypeRendezVous} from './rendezvous';
 import { useState, useEffect } from 'react';
@@ -9,12 +9,21 @@ import NotConnected from "@/components/notConnected/NotConnected";
 import { v4 as uuidv4 } from 'uuid';
 import { DateTime } from 'luxon';
 
+const TVA = 0.2;
+
 const asyncStripe = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
-const CheckoutButton = ({ amount = 1 }) => {
+interface CheckoutButtonProps {
+  amount: number;
+  description: string;
+  doc: string;
+  selectedTime : string;
+  type : string;
+}
+
+const CheckoutButton : React.FC<CheckoutButtonProps> = ({ amount, description, doc, selectedTime, type }) => {
   const router = useRouter();
   const [user, setUser] = useState<any>();
-  const [isMounted, setIsMounted] = useState(false);
   const [jwtToken, setJwtToken] = useState<string | null>();
   const [jwtExp, setJwtExp] = useState<string | null>();
 
@@ -25,7 +34,6 @@ const CheckoutButton = ({ amount = 1 }) => {
         const storedJwtExp = localStorage.getItem("jwtExp");
         setJwtToken(storedJwt);
         setJwtExp(storedJwtExp);
-        setIsMounted(true);
       } catch (error) {
         console.error("Error setting local storage:", error);
       }
@@ -87,27 +95,27 @@ const CheckoutButton = ({ amount = 1 }) => {
   
       const devis = new Devis({
         id: randomId,
-        professionelId: user?.id,
+        professionelId: doc,
         patientId: user?.id,
         rendezVousId: randomId,
-        prixAvantTVA: 100,
-        TVA: 0.2,
-        prixFinal: 120,
-        contenu: 'some-content',
-        description: 'some-description',
+        prixAvantTVA: amount-amount*TVA,
+        TVA: TVA,
+        prixFinal: amount,
+        contenu: type === "consultation" ? `Consultation avec ${user?.prenom} ${user?.nom} le ${selectedTime}` : `Examen avec ${user?.prenom} ${user?.nom} le ${selectedTime}`,
+        description: description,
       });
 
       const rendezVous = new RendezVous({
         id: randomId,
-        professionelId: user?.id,
+        professionelId: doc,
         patientId: user?.id,
-        startDate: new Date(),
+        startDate: selectedTime,
         duration: 30,
         etat: EtatRendezVous.A_VENIR,
         typeRendezVous: TypeRendezVous.CONSULTATION,
-        description: 'some-description',
-        prix: 120,
-        fichierJoint : "some-file",
+        description: description,
+        prix: amount,
+        fichierJoint : "",
       });
 
       console.log(rendezVous.toJSON());
@@ -161,9 +169,9 @@ const CheckoutButton = ({ amount = 1 }) => {
   return (
     <button
       onClick={handleCheckout}
-      className="bg-blue-700 hover:bg-blue-800 duration-200 px-8 py-4 text-white"
+      className="bg-blue-700 hover:bg-blue-800 duration-200 px-4 rounded-lg text-white"
     >
-      Payer par carte bancaire
+      Payer {amount}€
     </button>
   );
 };
