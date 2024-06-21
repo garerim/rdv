@@ -27,7 +27,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-/*
+
 export default function Billing({ user }: { user: UserProfile | undefined }) {
   const [cards, setCards] = useState<carteFactu[]>([]);
   const [cardTemp, setCardTemp] = useState<carteFactu>({

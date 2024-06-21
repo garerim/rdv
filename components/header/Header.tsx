@@ -65,7 +65,7 @@ export default function Header() {
                     <Link href="profile" className="text-secondary-foreground underline-offset-4 hover:underline">Profil</Link>
                     <Link href="suivi_medical" className="text-secondary-foreground underline-offset-4 hover:underline">Suivi</Link>
                     <Link href="conversations" className="text-secondary-foreground underline-offset-4 hover:underline">Conversations</Link>
-                    <Link href="Billing" className="text-secondary-foreground underline-offset-4 hover:underline">Billing</Link>
+                    <Link href="billing" className="text-secondary-foreground underline-offset-4 hover:underline">Billing</Link>
                     <Link href="..." className="text-secondary-foreground underline-offset-4 hover:underline">...</Link>
                 </div>
                 <div className="ml-auto flex items-center gap-2">

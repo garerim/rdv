@@ -1,4 +1,4 @@
-import CheckoutButton from "@/components/checkout";
+import CheckoutButton from "@/components/checkout/index";
 import Head from "next/head";
 
 export default function Checkout() {

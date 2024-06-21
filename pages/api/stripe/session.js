@@ -10,9 +10,6 @@ export default async function handler(req, res) {
     try {
       const { amount, metadata } = body;
 
-      // Log the received metadata
-      console.log('Received metadata:', metadata);
-
       const date = new Date().toISOString();
 
       const session = await stripe.checkout.sessions.create({
