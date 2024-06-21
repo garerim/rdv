@@ -46,7 +46,8 @@ export default async function PatientIdPageProps({ params }: PatientIdPageProps)
           createdAt: true,
           updatedAt: true,
           medecinProfileId: true,
-        }
+          medecinProfile: true,
+        },
       },
     },
   });

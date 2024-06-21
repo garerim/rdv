@@ -9,6 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,9 +24,15 @@ const AntecedentFormDialog: React.FC<AntecedentFormDialogProps> = ({ patientId, 
   const [details, setDetails] = useState('');
   const [dateAntecedent, setDateAntecedent] = useState('');
   const [nomMedecin, setNomMedecin] = useState('');
+  const [formError, setFormError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!dateAntecedent) {
+      setFormError('Veuillez sélectionner une date.');
+      return;
+    }
 
     const antecedent = {
       type,
@@ -44,12 +51,12 @@ const AntecedentFormDialog: React.FC<AntecedentFormDialogProps> = ({ patientId, 
     });
 
     if (response.ok) {
-      alert('Antécédent créé avec succès');
       setType('CHIRURGICAL');
       setDetails('');
       setDateAntecedent('');
       setNomMedecin('');
-      onFormSubmit(); // Callback pour rafraîchir la liste des antécédents
+      setFormError(null);
+      onFormSubmit();
     } else {
       alert('Erreur lors de la création de l\'antécédent');
     }
@@ -113,6 +120,9 @@ const AntecedentFormDialog: React.FC<AntecedentFormDialogProps> = ({ patientId, 
               required
             />
           </div>
+          {formError && (
+            <p className="text-red-500">{formError}</p>
+          )}
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="nomMedecin" className="text-right">
               Médecin
@@ -126,7 +136,9 @@ const AntecedentFormDialog: React.FC<AntecedentFormDialogProps> = ({ patientId, 
             />
           </div>
           <DialogFooter>
-            <Button type="submit">Ajouter</Button>
+            <DialogClose asChild>
+              <Button type="submit">Ajouter</Button>
+            </DialogClose>
           </DialogFooter>
         </form>
       </DialogContent>

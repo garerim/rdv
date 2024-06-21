@@ -1,11 +1,13 @@
 "use client"
 import { Avatar } from '@/components/ui/avatar';
 import { Separator } from '../ui/separator';
-import React from 'react';
+import React, { useState } from 'react';
 import SuiviForm from './suiviForm';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import AntecedentFormDialog from './antecedentForm';
+import TransformToAntecedentDialog from './transformToAntecedentForm';
+import { UserProfile } from '@prisma/client';
 
 type SuiviPatient = {
   id: string;
@@ -14,6 +16,7 @@ type SuiviPatient = {
   createdAt: Date;
   updatedAt: Date;
   medecinProfileId: string | null;
+  medecinProfile: UserProfile;
 };
 
 type Antecedent = {
@@ -47,6 +50,8 @@ type PatientContentProps = {
 
 const PatientContent: React.FC<PatientContentProps> = ({ patient, antecedents, suiviPatients }) => {
   const router = useRouter();
+  const [selectedSuivi, setSelectedSuivi] = useState<SuiviPatient | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleFormSubmit = () => {
     router.refresh();
@@ -62,10 +67,57 @@ const PatientContent: React.FC<PatientContentProps> = ({ patient, antecedents, s
     });
 
     if (response.ok) {
-      alert(`${type.charAt(0).toUpperCase() + type.slice(1)} supprimé avec succès`);
       router.refresh();
     } else {
       alert(`Erreur lors de la suppression de ${type}`);
+    }
+  };
+
+  const handleOpenDialog = (suiviPatient: SuiviPatient) => {
+    setSelectedSuivi(suiviPatient);
+    setDialogOpen(true);
+  };
+
+  const handleTransformToAntecedent = async (type: Antecedent['type']) => {
+    if (!selectedSuivi) return;
+
+    const nomMedecin = `${selectedSuivi.medecinProfile.firstName} ${selectedSuivi.medecinProfile.lastName}`  || 'Inconnu';
+    const details = `Diagnostic : ${selectedSuivi.diagnostique}\nTraitement : ${selectedSuivi.traitement}`;
+    
+    const newAntecedent = {
+      type,
+      details,
+      dateAntecedent: new Date(),
+      nomMedecin,
+    };
+
+    // Supprimer l'ancien suivi patient
+    const deleteResponse = await fetch(`/api/patient/delete-suiviPatient`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id: selectedSuivi.id }),
+    });
+
+    if (!deleteResponse.ok) {
+      alert('Erreur lors de la suppression du suivi patient');
+      return;
+    }
+
+    // Ajouter le nouvel antécédent
+    const addResponse = await fetch(`/api/patient/create-antecedent`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ type, details, dateAntecedent: new Date(), nomMedecin, userProfileId: patient.id }),
+    });
+
+    if (addResponse.ok) {
+      router.refresh();
+    } else {
+      alert('Erreur lors de la transformation du diagnostic en antécédent');
     }
   };
 
@@ -142,23 +194,37 @@ const PatientContent: React.FC<PatientContentProps> = ({ patient, antecedents, s
                     year: 'numeric',
                     month: 'short',
                     day: 'numeric',
-                  })} - Médecin: {suiviPatient.medecinProfileId}
+                  })} - Médecin: {suiviPatient.medecinProfile.firstName} {suiviPatient.medecinProfile.lastName}
                 </p>
-                <Button
-                  variant="outline"
-                  className="mt-2"
-                  onClick={() => handleDelete(suiviPatient.id, 'suiviPatient')}
-                >
-                  Supprimer
-                </Button>
+                <div className="flex gap-2 mt-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => handleDelete(suiviPatient.id, 'suiviPatient')}
+                  >
+                    Supprimer
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => handleOpenDialog(suiviPatient)}
+                  >
+                    Transformer en antécédent
+                  </Button>
+                </div>
               </div>
             ))
           ) : (
-            <p className="text-gray-600">Aucun suivis de Patient trouvé.</p>
+            <p className="text-gray-600">Aucun suivi de patient trouvé.</p>
           )}
         </div>
         <SuiviForm patientProfileId={patient.id} onFormSubmit={handleFormSubmit} />
       </div>
+      {selectedSuivi && (
+        <TransformToAntecedentDialog
+          open={dialogOpen}
+          onClose={() => setDialogOpen(false)}
+          onConfirm={handleTransformToAntecedent}
+        />
+      )}
     </div>
   );
 };

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -36,7 +36,6 @@ const SuiviForm: React.FC<SuiviFormProps> = ({ patientProfileId, onFormSubmit })
     });
 
     if (response.ok) {
-      alert('Suivi créé avec succès');
       onFormSubmit();
     } else {
       alert('Erreur lors de la création du suivi');
@@ -78,7 +77,9 @@ const SuiviForm: React.FC<SuiviFormProps> = ({ patientProfileId, onFormSubmit })
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit">Enregistrer</Button>
+            <DialogClose asChild>
+              <Button type="submit">Enregistrer</Button>
+            </DialogClose>
           </DialogFooter>
         </form>
       </DialogContent>
