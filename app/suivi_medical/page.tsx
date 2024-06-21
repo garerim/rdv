@@ -35,7 +35,7 @@ export default function page() {
     const [suivis, setSuivis] = useState<any[]>();
     
     const AccordionCard = ({itemNumber="item-default", suivi}:any) => {
-        return <AccordionItem value={itemNumber} >
+        return <AccordionItem value={itemNumber} className="hover:bg-accent">
                     <AccordionTrigger className="hover:no-underline">
                         <div className="flex">
                             <VerticalBarMain/>
