@@ -32,7 +32,7 @@ export default async function handler(req, res) {
         mode: 'payment',
         cancel_url: `${host}`,
         success_url: `${host}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-        metadata: metadata // Pass the metadata to the session
+        metadata: metadata
       });
 
       console.log('Stripe session:', session);

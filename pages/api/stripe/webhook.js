@@ -5,7 +5,7 @@ const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY);
 
 export const config = {
   api: {
-    bodyParser: false, // Stripe needs the raw body to verify the signature
+    bodyParser: false,
   },
 };
 
