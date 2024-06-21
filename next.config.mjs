@@ -1,6 +1,7 @@
-import cron from './lib/cron.js';
+import './lib/cron.js';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {};
 
 export default nextConfig;
+
