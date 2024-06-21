@@ -194,7 +194,7 @@ CREATE TABLE `RendezVous` (
     `duration` DOUBLE NOT NULL,
     `etat` ENUM('A_VENIR', 'PASSE', 'ANNULE') NOT NULL DEFAULT 'A_VENIR',
     `typeRendezVous` ENUM('CONSULTATION', 'EXAMEN', 'AUTRE') NOT NULL DEFAULT 'CONSULTATION',
-    `description` VARCHAR(191) NOT NULL,
+    `description` LONGTEXT NOT NULL,
     `prix` DOUBLE NOT NULL,
     `fichierJoint` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
