@@ -10,8 +10,6 @@ export default async function handler(
 
     const { userEmail, startDate, description, docName } = data;
 
-    console.log(data)
-
     let transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {

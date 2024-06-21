@@ -8,28 +8,25 @@ export default async function handler(
   if (req.method === "GET") {
     try {
       const now = new Date();
-      const thirtyMinutesAgo = new Date(now.getTime() - 30 * 60 * 1000);
 
       const rdvs = await prisma.rendezVous.findMany({
         where: {
           startDate: {
-            gte: thirtyMinutesAgo,
-            lte: now
-          }
-        }
-      })
+            lte: now,
+          },
+          etat: "A_VENIR",
+        },
+      });
 
       rdvs.forEach(async (element) => {
-        if (element.etat === "A_VENIR") {
-            await prisma.rendezVous.update({
-                data: {
-                    etat: "PASSE"
-                },
-                where: {
-                    id: element.id as string
-                }
-            })
-        }
+        await prisma.rendezVous.update({
+          data: {
+            etat: "PASSE",
+          },
+          where: {
+            id: element.id as string,
+          },
+        });
       });
 
       res.status(200).json(rdvs);
