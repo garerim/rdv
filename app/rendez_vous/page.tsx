@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import { UserProfile } from "@prisma/client";
 import {
   Table,
@@ -35,15 +35,15 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command"
+} from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
-import { Separator } from '@/components/ui/separator';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+} from "@/components/ui/popover";
+import { Separator } from "@/components/ui/separator";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -54,7 +54,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -68,12 +68,10 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
-  Trash2,
-} from "lucide-react"
-import { Loader } from '@/components/loader/Loader';
-import { Disconnected } from '@/components/disconnected/disconnected';
+} from "@/components/ui/dropdown-menu";
+import { Trash2 } from "lucide-react";
+import { Loader } from "@/components/loader/Loader";
+import { Disconnected } from "@/components/disconnected/disconnected";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ContextMenu,
@@ -90,8 +88,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { fr } from 'date-fns/locale';
-
+import { fr } from "date-fns/locale";
 
 const rdvTypes = [
   {
@@ -106,22 +103,22 @@ const rdvTypes = [
     value: "AUTRE",
     label: "Autre",
   },
-]
+];
 
 const formatDate = (dateString: any) => {
   const date = new Date(dateString);
-  return date.toLocaleDateString('fr-FR', {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
+  return date.toLocaleDateString("fr-FR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
   });
 };
 
 const formatHour = (dateString: any) => {
   const date = new Date(dateString);
-  return date.toLocaleTimeString('fr-FR', {
-    hour: '2-digit',
-    minute: '2-digit',
+  return date.toLocaleTimeString("fr-FR", {
+    hour: "2-digit",
+    minute: "2-digit",
   });
 };
 
@@ -183,12 +180,12 @@ export default function Page() {
       const userData = await userResponse.json();
       setUser(userData);
 
-      fetchRdvs(userData.id, userData.role)
+      fetchRdvs(userData.id, userData.role);
 
       if (userData.role === "USER") {
-        getAllDocs()
+        getAllDocs();
       } else if (userData.role === "DOCTOR") {
-        fetchUsersByDoctor(userData.id)
+        fetchUsersByDoctor(userData.id);
       }
     };
 
@@ -196,7 +193,9 @@ export default function Page() {
     setLoading(false);
   }, []);
 
-  useEffect(() => { fetchRdvs(user.id, user.role), console.log(selectedTabs) }, [selectedTabs]);
+  useEffect(() => {
+    fetchRdvs(user.id, user.role), console.log(selectedTabs);
+  }, [selectedTabs]);
 
   const fetchRdvs = async (userId: string, userRole: string) => {
     try {
@@ -207,41 +206,56 @@ export default function Page() {
       var rdvData = await rdvResponse.json();
       setRdvs(rdvData);
       if (selectedTabs === 2) {
-        setFilteredRdvs(rdvData.filter((rdv: { startDate: any; }) => formatDate(rdv.startDate) === formatDate(Date.now())));
+        setFilteredRdvs(
+          rdvData.filter(
+            (rdv: { startDate: any }) =>
+              formatDate(rdv.startDate) === formatDate(Date.now())
+          )
+        );
       } else if (selectedTabs === 3) {
-        setFilteredRdvs(rdvData.filter((rdv: { etat: any; }) => rdv.etat === "A_VENIR"));
+        setFilteredRdvs(
+          rdvData.filter((rdv: { etat: any }) => rdv.etat === "A_VENIR")
+        );
       } else if (selectedTabs === 4) {
-        setFilteredRdvs(rdvData.filter((rdv: { etat: any; }) => rdv.etat === "PASSE"));
+        setFilteredRdvs(
+          rdvData.filter((rdv: { etat: any }) => rdv.etat === "PASSE")
+        );
       } else if (selectedTabs === 5) {
-        setFilteredRdvs(rdvData.filter((rdv: { etat: any; }) => rdv.etat === "ANNULE"));
+        setFilteredRdvs(
+          rdvData.filter((rdv: { etat: any }) => rdv.etat === "ANNULE")
+        );
       } else if (userRole === "USER") {
-        setFilteredRdvs(rdvData.filter((rdv: { etat: any; }) => rdv.etat !== "ANNULE"));
+        setFilteredRdvs(
+          rdvData.filter((rdv: { etat: any }) => rdv.etat !== "ANNULE")
+        );
       } else {
         setFilteredRdvs(rdvData);
       }
-      setDeletedRdvs(rdvData.filter((rdv: { etat: any; }) => rdv.etat === "ANNULE"));
+      setDeletedRdvs(
+        rdvData.filter((rdv: { etat: any }) => rdv.etat === "ANNULE")
+      );
     } catch (error) {
-      console.error('Erreur:', error);
+      console.error("Erreur:", error);
     }
-  }
+  };
 
   const fetchUsersByDoctor = async (doctorId: string) => {
     try {
       const response = await fetch(`/api/getUsersByDoc?id=${doctorId}`, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
       if (!response.ok) {
-        throw new Error('Erreur lors de la récupération des utilisateurs');
+        throw new Error("Erreur lors de la récupération des utilisateurs");
       }
 
       const users = await response.json();
       setAllUsers(users);
     } catch (error) {
-      console.error('Erreur:', error);
+      console.error("Erreur:", error);
     }
   };
 
@@ -270,9 +284,14 @@ export default function Page() {
 
   const getAllDispoByDayAndDoctor = async (medecin: any, day: Date) => {
     try {
-      const response = await fetch(`/api/getAllDispoByDayAndDoctor?id=${medecin.id}&day=${day.toISOString()}`, {
-        method: "GET",
-      });
+      const response = await fetch(
+        `/api/getAllDispoByDayAndDoctor?id=${
+          medecin.id
+        }&day=${day.toISOString()}`,
+        {
+          method: "GET",
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Erreur lors de la récupération des disponibilités");
@@ -287,19 +306,36 @@ export default function Page() {
   };
 
   const LigneTableauListRDVUser = ({ rdv }: any) => {
-    const medecinName = fullNameOf(allMedecins?.find((medecin) => medecin.id === rdv.professionelId)) || "Chargement...";
+    const medecinName =
+      fullNameOf(
+        allMedecins?.find((medecin) => medecin.id === rdv.professionelId)
+      ) || "Chargement...";
 
     return (
       <ContextMenu>
         <ContextMenuTrigger asChild>
-          <TableRow className='cursor-pointer'>
-            <TableCell className="font-medium flex justify-center items-center">
+          <TableRow className="cursor-pointer">
+            <TableCell className="font-medium h-[100%]">
               <TooltipProvider>
                 <Tooltip delayDuration={100}>
                   <TooltipTrigger>
-                    <div className={`rounded-full w-4 h-4 ${rdv.etat === 'A_VENIR' ? 'bg-orange-400' : rdv.etat === 'PASSE' ? 'bg-green-600' : 'bg-red-600'}`} />
+                    <div
+                      className={`rounded-full w-4 h-4 ml-3 ${
+                        rdv.etat === "A_VENIR"
+                          ? "bg-orange-400"
+                          : rdv.etat === "PASSE"
+                          ? "bg-green-600"
+                          : "bg-red-600"
+                      }`}
+                    />
                   </TooltipTrigger>
-                  <TooltipContent>{rdv.etat === 'A_VENIR' ? 'A venir' : rdv.etat === 'PASSE' ? 'Passé' : 'Annulé'}</TooltipContent>
+                  <TooltipContent>
+                    {rdv.etat === "A_VENIR"
+                      ? "A venir"
+                      : rdv.etat === "PASSE"
+                      ? "Passé"
+                      : "Annulé"}
+                  </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </TableCell>
@@ -328,14 +364,28 @@ export default function Page() {
     return (
       <ContextMenu>
         <ContextMenuTrigger asChild>
-          <TableRow className='cursor-pointer'>
+          <TableRow className="cursor-pointer">
             <TableCell className="font-medium flex justify-center items-center h-full">
               <TooltipProvider>
                 <Tooltip delayDuration={100}>
                   <TooltipTrigger>
-                    <div className={`rounded-full w-4 h-4 ${rdv.etat === 'A_VENIR' ? 'bg-orange-400' : rdv.etat === 'PASSE' ? 'bg-green-600' : 'bg-red-600'}`} />
+                    <div
+                      className={`rounded-full w-4 h-4 ml-3 ${
+                        rdv.etat === "A_VENIR"
+                          ? "bg-orange-400"
+                          : rdv.etat === "PASSE"
+                          ? "bg-green-600"
+                          : "bg-red-600"
+                      }`}
+                    />
                   </TooltipTrigger>
-                  <TooltipContent>{rdv.etat === 'A_VENIR' ? 'A venir' : rdv.etat === 'PASSE' ? 'Passé' : 'Annulé'}</TooltipContent>
+                  <TooltipContent>
+                    {rdv.etat === "A_VENIR"
+                      ? "A venir"
+                      : rdv.etat === "PASSE"
+                      ? "Passé"
+                      : "Annulé"}
+                  </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </TableCell>
@@ -359,7 +409,12 @@ export default function Page() {
 
   const LigneTableauCrenauxHoraires = ({ date }: any) => {
     return (
-      <TableRow onClick={(e: any) => { bookAppointment(date) }} className='cursor-pointer'>
+      <TableRow
+        onClick={(e: any) => {
+          bookAppointment(date);
+        }}
+        className="cursor-pointer"
+      >
         <TableCell>{formatDate(new Date(date))}</TableCell>
         <TableCell>{formatHour(new Date(date))}</TableCell>
         <TableCell>30 min</TableCell>
@@ -369,13 +424,13 @@ export default function Page() {
 
   const incrementRdvStep = () => {
     setRdvStep(rdvStep + 1);
-    rdvStep + 1 === 4 && setDialogOpen(false)
+    rdvStep + 1 === 4 && setDialogOpen(false);
   };
 
   const decrementRdvStep = () => {
-    setRdvStep(rdvStep - 1)
-    rdvStep - 1 === 0 && setDialogOpen(false)
-  }
+    setRdvStep(rdvStep - 1);
+    rdvStep - 1 === 0 && setDialogOpen(false);
+  };
 
   useEffect(() => {
     if (rdvStep === 1) {
@@ -385,7 +440,9 @@ export default function Page() {
 
   useEffect(() => {
     if (rdvStep === 2 && selectedDoc && date) {
-      const selectedMedecin = allMedecins!.find((medecin) => medecin.id === selectedDoc);
+      const selectedMedecin = allMedecins!.find(
+        (medecin) => medecin.id === selectedDoc
+      );
       getAllDispoByDayAndDoctor(selectedMedecin, date);
     }
   }, [rdvStep, selectedDoc, date]);
@@ -403,38 +460,52 @@ export default function Page() {
 
   const bookAppointment = (date: any) => {
     {
-      rdvStep === 2 && selectedDoc ?
-        (setSelectedRdv(date),
-          setError(false),
-          incrementRdvStep()) :
-        setError(true)
+      rdvStep === 2 && selectedDoc
+        ? (setSelectedRdv(date), setError(false), incrementRdvStep())
+        : setError(true);
     }
-  }
+  };
 
   const resetBooking = () => {
-    setRdvStep(1)
-    setError(false)
-    setSelectedDescription("")
-    setSelectedDoc(undefined)
-    setSelectedRdv(undefined)
-    setSelectedType(undefined)
-    setAllFreeRdvs(undefined)
-  }
+    setRdvStep(1);
+    setError(false);
+    setSelectedDescription("");
+    setSelectedDoc(undefined);
+    setSelectedRdv(undefined);
+    setSelectedType(undefined);
+    setAllFreeRdvs(undefined);
+  };
 
   const cancelAppointment = (rdv: any) => {
     if (user.role === "USER") {
-      deleteRdv(rdv.id)
+      deleteRdv(rdv.id);
     } else if (user.role === "DOCTOR") {
-      console.log("annulation")
-      cancelRdv(rdv)
+      console.log("annulation");
+      cancelRdv(rdv);
     }
-  }
+  };
 
   const createRdv = async () => {
-    const response = await fetch('/api/manageRdv', {
-      method: 'POST',
+    const response = await fetch("/api/manageRdv", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        professionelId: selectedDoc,
+        patientId: user.id,
+        startDate: selectedRdv,
+        duration: 30,
+        typeRendezVous: selectedType,
+        description: selectedDescription,
+        prix: 25,
+      }),
+    });
+
+    await fetch("/api/send-email/sendrdvconfirmation", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         professionelId: selectedDoc,
@@ -448,39 +519,43 @@ export default function Page() {
     });
 
     if (response.ok) {
-      console.log('Rendez-vous créé avec succès');
-      incrementRdvStep()
-      resetBooking()
-      fetchRdvs(user.id, user.role)
+      console.log("Rendez-vous créé avec succès");
+      incrementRdvStep();
+      resetBooking();
+      fetchRdvs(user.id, user.role);
     } else {
       const errorData = await response.json();
-      console.log(errorData.error || 'Erreur lors de la création du rendez-vous');
+      console.log(
+        errorData.error || "Erreur lors de la création du rendez-vous"
+      );
     }
-  }
+  };
 
   const deleteRdv = async (rdvId: any) => {
     const response = await fetch(`/api/manageRdv?rdvId=${rdvId}`, {
-      method: 'DELETE',
+      method: "DELETE",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
 
     if (response.ok) {
-      console.log('Rendez-vous supprimé avec succès');
-      fetchRdvs(user.id, user.role)
+      console.log("Rendez-vous supprimé avec succès");
+      fetchRdvs(user.id, user.role);
     } else {
       const errorData = await response.json();
-      console.log(errorData.error || 'Erreur lors de la suppression du rendez-vous');
+      console.log(
+        errorData.error || "Erreur lors de la suppression du rendez-vous"
+      );
     }
-  }
+  };
 
   const cancelRdv = async (rdv: any) => {
-    console.log(rdv.id)
+    console.log(rdv.id);
     const response = await fetch(`/api/manageRdv?rdvId=${rdv.id}`, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         professionelId: rdv.professionelId,
@@ -491,55 +566,109 @@ export default function Page() {
         typeRendezVous: rdv.typeRendezVous,
         description: rdv.description,
         prix: rdv.prix,
-        fichierJoint: rdv.fichierJoint
+        fichierJoint: rdv.fichierJoint,
+      }),
+    });
+
+    await fetch("/api/send-email/sendrdvannule", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        professionelId: selectedDoc,
+        patientId: user.id,
+        startDate: selectedRdv,
+        duration: 30,
+        typeRendezVous: selectedType,
+        description: selectedDescription,
+        prix: 25,
       }),
     });
 
     if (response.ok) {
-      console.log('Rendez-vous supprimé avec succès');
-      fetchRdvs(user.id, user.role)
+      console.log("Rendez-vous supprimé avec succès");
+      fetchRdvs(user.id, user.role);
     } else {
       const errorData = await response.json();
-      console.log(errorData.error || 'Erreur lors de la suppression du rendez-vous');
+      console.log(
+        errorData.error || "Erreur lors de la suppression du rendez-vous"
+      );
     }
-  }
+  };
 
   const deleteCancelledRdvs = () => {
-    deletedRdvs?.forEach((rdv) => { deleteRdv(rdv.id) })
-  }
+    deletedRdvs?.forEach((rdv) => {
+      deleteRdv(rdv.id);
+    });
+  };
 
   if (loading) {
-    return <Loader />
+    return <Loader />;
   } else if (user.error) {
-    return <Disconnected />
+    return <Disconnected />;
   } else if (user.role === "USER") {
     return (
-      <div className='pl-8 pr-8'>
-        <div className='flex justify-between p-4'>
-          <div className='w-1/6 justify-start flex'>
+      <div className="pl-8 pr-8">
+        <div className="flex justify-between p-4">
+          <div className="w-1/6 justify-start flex">
             <Tabs defaultValue="1" className="w-[400px]">
               <TabsList>
-                <TabsTrigger value="1" onClick={(e: any) => { setSelectedTabs(1) }}>Tous</TabsTrigger>
-                <TabsTrigger value="3" onClick={(e: any) => { setSelectedTabs(3) }}>A venir</TabsTrigger>
-                <TabsTrigger value="4" onClick={(e: any) => { setSelectedTabs(4) }}>Passé</TabsTrigger>
+                <TabsTrigger
+                  value="1"
+                  onClick={(e: any) => {
+                    setSelectedTabs(1);
+                  }}
+                >
+                  Tous
+                </TabsTrigger>
+                <TabsTrigger
+                  value="3"
+                  onClick={(e: any) => {
+                    setSelectedTabs(3);
+                  }}
+                >
+                  A venir
+                </TabsTrigger>
+                <TabsTrigger
+                  value="4"
+                  onClick={(e: any) => {
+                    setSelectedTabs(4);
+                  }}
+                >
+                  Passé
+                </TabsTrigger>
               </TabsList>
             </Tabs>
           </div>
           <h2 className="text-3xl text-center font-extrabold">Rendez-vous</h2>
           <div className="flex justify-end gap-2">
-            <div><Button variant="outline" onClick={(e: any) => { fetchRdvs(user.id, user.role) }}>Actualiser</Button></div>
+            <div>
+              <Button
+                variant="outline"
+                onClick={(e: any) => {
+                  fetchRdvs(user.id, user.role);
+                }}
+              >
+                Actualiser
+              </Button>
+            </div>
             <div>
               <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="outline" onClick={resetBooking}>Prendre Rendez-vous</Button>
+                  <Button variant="outline" onClick={resetBooking}>
+                    Prendre Rendez-vous
+                  </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px] max-h-[600px]">
                   <DialogHeader>
                     <DialogTitle>Prendre rendez-vous</DialogTitle>
                     <DialogDescription>
-                      {rdvStep === 1 ? "Sélectionnez une date afin de prendre un rendez-vous." :
-                        rdvStep === 2 ? "Sélectionnez un médecin et un créneau libre." :
-                          "Sélectionnez le type de rendez-vous souhaité, et expliquer la raison de ce rendez-vous."}
+                      {rdvStep === 1
+                        ? "Sélectionnez une date afin de prendre un rendez-vous."
+                        : rdvStep === 2
+                        ? "Sélectionnez un médecin et un créneau libre."
+                        : "Sélectionnez le type de rendez-vous souhaité, et expliquer la raison de ce rendez-vous."}
                     </DialogDescription>
                   </DialogHeader>
                   <div className="grid gap-4 py-4 justify-center">
@@ -549,10 +678,14 @@ export default function Page() {
                         selected={date}
                         onSelect={setDate}
                         className="rounded-md border"
-                        disabled={[{ before: new Date() }, { dayOfWeek: [0, 6] }]}
+                        disabled={[
+                          { before: new Date() },
+                          { dayOfWeek: [0, 6] },
+                        ]}
                         weekStartsOn={1}
-                        locale={fr} />
-                    ) : rdvStep === 2 ?
+                        locale={fr}
+                      />
+                    ) : rdvStep === 2 ? (
                       <>
                         <Popover open={open} onOpenChange={setOpen}>
                           <PopoverTrigger asChild>
@@ -563,7 +696,11 @@ export default function Page() {
                               className="w-60 justify-between"
                             >
                               {selectedDoc
-                                ? fullNameOf(allMedecins!.find((medecin) => medecin.id === selectedDoc)) || "Sélectionner un médecin"
+                                ? fullNameOf(
+                                    allMedecins!.find(
+                                      (medecin) => medecin.id === selectedDoc
+                                    )
+                                  ) || "Sélectionner un médecin"
                                 : "Sélectionner un médecin"}
                               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                             </Button>
@@ -571,7 +708,9 @@ export default function Page() {
                           <PopoverContent className="w-60 p-0">
                             <Command>
                               <CommandList>
-                                <CommandEmpty>Aucun médecin trouvé.</CommandEmpty>
+                                <CommandEmpty>
+                                  Aucun médecin trouvé.
+                                </CommandEmpty>
                                 <CommandGroup>
                                   {allMedecins!.map((medecin) => (
                                     <CommandItem
@@ -590,8 +729,8 @@ export default function Page() {
                             </Command>
                           </PopoverContent>
                         </Popover>
-                        <Separator className='my-4'></Separator>
-                        <ScrollArea className='max-h-60'>
+                        <Separator className="my-4"></Separator>
+                        <ScrollArea className="max-h-60">
                           <Table className="w-full mt-2">
                             <TableHeader>
                               <TableRow>
@@ -602,93 +741,159 @@ export default function Page() {
                             </TableHeader>
                             <TableBody>
                               {allFreeRdvs?.map((rdv) => (
-                                <LigneTableauCrenauxHoraires key={rdv} date={rdv} />
+                                <LigneTableauCrenauxHoraires
+                                  key={rdv}
+                                  date={rdv}
+                                />
                               ))}
                             </TableBody>
                           </Table>
                         </ScrollArea>
                       </>
-                      : rdvStep === 3 &&
-                      <>
-                        <div className='flex gap-4 justify-center'><p>{formatDate(selectedRdv)}</p><Separator orientation='vertical' /><p>{formatHour(selectedRdv)}</p><Separator orientation='vertical' /><p>30 min</p></div>
-                        <Separator className='my-4'></Separator>
-                        <Popover open={open} onOpenChange={setOpen}>
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant="outline"
-                              role="combobox"
-                              aria-expanded={open}
-                              className="w-[350px] justify-between"
-                            >
-                              {selectedType
-                                ? rdvTypes.find((type) => type.value === selectedType)?.label
-                                : "Sélectionner un type de rendez-vous..."}
-                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-[350px] p-0">
-                            <Command>
-                              <CommandList>
-                                <CommandGroup>
-                                  {rdvTypes.map((type) => (
-                                    <CommandItem
-                                      key={type.value}
-                                      value={type.value}
-                                      onSelect={(currentValue) => {
-                                        setSelectedType(currentValue)
-                                        setOpen(false)
-                                      }}
-                                    >
-                                      {type.label}
-                                    </CommandItem>
-                                  ))}
-                                </CommandGroup>
-                              </CommandList>
-                            </Command>
-                          </PopoverContent>
-                        </Popover>
-                        <Separator className='my-4'></Separator>
-                        <div className="grid w-full max-w-sm items-center gap-1.5">
-                          <Label htmlFor="email">Description</Label>
-                          <Textarea placeholder="Pourquoi souhaitez-vous un rendez-vous ?" value={selectedDescription} onChange={(e: any) => { setSelectedDescription(e.target.value) }} />
-                        </div>
-                      </>
-                    }
+                    ) : (
+                      rdvStep === 3 && (
+                        <>
+                          <div className="flex gap-4 justify-center">
+                            <p>{formatDate(selectedRdv)}</p>
+                            <Separator orientation="vertical" />
+                            <p>{formatHour(selectedRdv)}</p>
+                            <Separator orientation="vertical" />
+                            <p>30 min</p>
+                          </div>
+                          <Separator className="my-4"></Separator>
+                          <Popover open={open} onOpenChange={setOpen}>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                role="combobox"
+                                aria-expanded={open}
+                                className="w-[350px] justify-between"
+                              >
+                                {selectedType
+                                  ? rdvTypes.find(
+                                      (type) => type.value === selectedType
+                                    )?.label
+                                  : "Sélectionner un type de rendez-vous..."}
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[350px] p-0">
+                              <Command>
+                                <CommandList>
+                                  <CommandGroup>
+                                    {rdvTypes.map((type) => (
+                                      <CommandItem
+                                        key={type.value}
+                                        value={type.value}
+                                        onSelect={(currentValue) => {
+                                          setSelectedType(currentValue);
+                                          setOpen(false);
+                                        }}
+                                      >
+                                        {type.label}
+                                      </CommandItem>
+                                    ))}
+                                  </CommandGroup>
+                                </CommandList>
+                              </Command>
+                            </PopoverContent>
+                          </Popover>
+                          <Separator className="my-4"></Separator>
+                          <div className="grid w-full max-w-sm items-center gap-1.5">
+                            <Label htmlFor="email">Description</Label>
+                            <Textarea
+                              placeholder="Pourquoi souhaitez-vous un rendez-vous ?"
+                              value={selectedDescription}
+                              onChange={(e: any) => {
+                                setSelectedDescription(e.target.value);
+                              }}
+                            />
+                          </div>
+                        </>
+                      )
+                    )}
                   </div>
                   <DialogFooter>
-                    <div className='justify-center w-full flex-col'>
-                      {error && <div className='text-red-600 text-center w-full text-sm font-semibold my-3'>{rdvStep === 2 ? "Veuillez sélectionner un médecin pour continuer":"Veuillez remplir tous les champs"}</div>}
-                      <div className='flex w-full'>
-                        <div className='w-1/2 flex justify-start'><Button onClick={decrementRdvStep} variant="outline">{rdvStep === 1 ? "Annuler" : "Retour"}</Button></div>
-                        <div className='w-1/2 flex justify-end'>
-                          {rdvStep === 3 ?
-                            <AlertDialog >
-                              <AlertDialogTrigger asChild>{selectedType && selectedDescription ? <Button variant="outline">Valider</Button>: <Button disabled>Valider</Button>}</AlertDialogTrigger>
+                    <div className="justify-center w-full flex-col">
+                      {error && (
+                        <div className="text-red-600 text-center w-full text-sm font-semibold my-3">
+                          {rdvStep === 2
+                            ? "Veuillez sélectionner un médecin pour continuer"
+                            : "Veuillez remplir tous les champs"}
+                        </div>
+                      )}
+                      <div className="flex w-full">
+                        <div className="w-1/2 flex justify-start">
+                          <Button onClick={decrementRdvStep} variant="outline">
+                            {rdvStep === 1 ? "Annuler" : "Retour"}
+                          </Button>
+                        </div>
+                        <div className="w-1/2 flex justify-end">
+                          {rdvStep === 3 ? (
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                {selectedType && selectedDescription ? (
+                                  <Button variant="outline">Valider</Button>
+                                ) : (
+                                  <Button disabled>Valider</Button>
+                                )}
+                              </AlertDialogTrigger>
                               <AlertDialogContent>
                                 <AlertDialogHeader>
-                                  <AlertDialogTitle>Confirmer la réservation ?</AlertDialogTitle>
+                                  <AlertDialogTitle>
+                                    Confirmer la réservation ?
+                                  </AlertDialogTitle>
                                   <AlertDialogDescription>
-                                    <div>Une fois validée, cette réservation vous sera facturée, voici un récapitulatif :</div>
-                                    <div className='flex gap-4 justify-center'>
+                                    <div>
+                                      Une fois validée, cette réservation vous
+                                      sera facturée, voici un récapitulatif :
+                                    </div>
+                                    <div className="flex gap-4 justify-center">
                                       <p>{formatDate(selectedRdv)}</p>
-                                      <Separator orientation='vertical' />
+                                      <Separator orientation="vertical" />
                                       <p>{formatHour(selectedRdv)}</p>
-                                      <Separator orientation='vertical' />
+                                      <Separator orientation="vertical" />
                                       <p>30 min</p>
                                     </div>
                                     <Separator />
-                                    <div className='flex justify-between p-4'><div>{fullNameOf(allMedecins?.find((medecin) => medecin.id === selectedDoc))}</div><Separator orientation='vertical' /><div>{selectedType}</div></div>
+                                    <div className="flex justify-between p-4">
+                                      <div>
+                                        {fullNameOf(
+                                          allMedecins?.find(
+                                            (medecin) =>
+                                              medecin.id === selectedDoc
+                                          )
+                                        )}
+                                      </div>
+                                      <Separator orientation="vertical" />
+                                      <div>{selectedType}</div>
+                                    </div>
                                     <Separator />
-                                    <div className='m-4'>{selectedDescription}</div>
+                                    <div className="m-4">
+                                      {selectedDescription}
+                                    </div>
                                   </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
                                   <AlertDialogCancel>Annuler</AlertDialogCancel>
-                                  <AlertDialogAction onClick={createRdv}>Confirmer</AlertDialogAction>
+                                  <AlertDialogAction onClick={createRdv}>
+                                    Confirmer
+                                  </AlertDialogAction>
                                 </AlertDialogFooter>
                               </AlertDialogContent>
                             </AlertDialog>
-                            : rdvStep === 2 ? <Button disabled>Suivant</Button> : date ? <Button onClick={incrementRdvStep} variant="outline">Suivant</Button> : <Button disabled>Suivant</Button>}
+                          ) : rdvStep === 2 ? (
+                            <Button disabled>Suivant</Button>
+                          ) : date ? (
+                            <Button
+                              onClick={incrementRdvStep}
+                              variant="outline"
+                            >
+                              Suivant
+                            </Button>
+                          ) : (
+                            <Button disabled>Suivant</Button>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -698,48 +903,60 @@ export default function Page() {
             </div>
           </div>
         </div>
-        {deletedRdvs && deletedRdvs.length > 0 &&
-          <Card className='p-4 m-2'>
-            <CardHeader className='flex justify-between'>
-              <div className='flex justify-between'>
+        {deletedRdvs && deletedRdvs.length > 0 && (
+          <Card className="p-4 m-2">
+            <CardHeader className="flex justify-between">
+              <div className="flex justify-between">
                 <div>
                   <CardTitle>Rendez-vous annulés</CardTitle>
-                  <CardDescription>Ces rendez-vous ont été annulés par votre médecin. Merci d'en prendre connaissance et réserver un nouveau créneau afin de réaliser votre visite.</CardDescription>
+                  <CardDescription>
+                    {
+                      "Ces rendez-vous ont été annulés par votre médecin. Merci d'en prendre connaissance et réserver un nouveau créneau afin de réaliser votre visite."
+                    }
+                  </CardDescription>
                 </div>
-                <AlertDialog >
-                  <AlertDialogTrigger asChild><Button variant="destructive">J'ai compris</Button></AlertDialogTrigger>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive">{"J'ai compris"}</Button>
+                  </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>Etes vous sûr ?</AlertDialogTitle>
                       <AlertDialogDescription>
-                        <div>Une fois validé, tous ces rendez-vous seront supprimés définitivement, et aucun retour en arrière ne sera possible.</div>
+                        <div>
+                          Une fois validé, tous ces rendez-vous seront supprimés
+                          définitivement, et aucun retour en arrière ne sera
+                          possible.
+                        </div>
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Annuler</AlertDialogCancel>
-                      <AlertDialogAction onClick={deleteCancelledRdvs}>Valider</AlertDialogAction>
+                      <AlertDialogAction onClick={deleteCancelledRdvs}>
+                        Valider
+                      </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
               </div>
             </CardHeader>
             <CardContent>
-              <ScrollArea className='h-40'>
+              <ScrollArea className="h-40">
                 <Table className="w-full">
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="w-[100px] text-center">Statut</TableHead>
+                      <TableHead className="w-[100px]">Statut</TableHead>
                       <TableHead className="w-1/12">Date</TableHead>
                       <TableHead>Heure</TableHead>
                       <TableHead>Durée</TableHead>
                       <TableHead>Médecin</TableHead>
-                      <TableHead className='w-1/3'>Description</TableHead>
+                      <TableHead className="w-1/3">Description</TableHead>
                       <TableHead>Type</TableHead>
                       <TableHead>Prix</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {deletedRdvs?.map((rdv: { id: any; }) => (
+                    {deletedRdvs?.map((rdv: { id: any }) => (
                       <LigneTableauListRDVUser key={rdv.id} rdv={rdv} />
                     ))}
                   </TableBody>
@@ -747,16 +964,16 @@ export default function Page() {
               </ScrollArea>
             </CardContent>
           </Card>
-        }
+        )}
         <Table className="w-full">
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[100px] text-center">Statut</TableHead>
+              <TableHead className="w-[100px]">Statut</TableHead>
               <TableHead className="w-1/12">Date</TableHead>
               <TableHead>Heure</TableHead>
               <TableHead>Durée</TableHead>
               <TableHead>Médecin</TableHead>
-              <TableHead className='w-1/3'>Description</TableHead>
+              <TableHead className="w-1/3">Description</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Prix</TableHead>
             </TableRow>
@@ -771,45 +988,91 @@ export default function Page() {
     );
   } else if (user.role === "DOCTOR") {
     return (
-      <div className='pl-8 pr-8'>
-        <div className='flex justify-between p-4'>
-          <div className='w-1/6 justify-start flex'>
+      <div className="pl-8 pr-8">
+        <div className="flex justify-between p-4">
+          <div className="w-1/6 justify-start flex">
             <Tabs defaultValue="1" className="w-[400px]">
               <TabsList>
-                <TabsTrigger value="1" onClick={(e: any) => { setSelectedTabs(1) }}>Tous</TabsTrigger>
-                <TabsTrigger value="2" onClick={(e: any) => { setSelectedTabs(2) }}>Ce jour</TabsTrigger>
-                <TabsTrigger value="3" onClick={(e: any) => { setSelectedTabs(3) }}>A venir</TabsTrigger>
-                <TabsTrigger value="4" onClick={(e: any) => { setSelectedTabs(4) }}>Passé</TabsTrigger>
-                <TabsTrigger value="5" onClick={(e: any) => { setSelectedTabs(5) }}>Annulé</TabsTrigger>
+                <TabsTrigger
+                  value="1"
+                  onClick={(e: any) => {
+                    setSelectedTabs(1);
+                  }}
+                >
+                  Tous
+                </TabsTrigger>
+                <TabsTrigger
+                  value="2"
+                  onClick={(e: any) => {
+                    setSelectedTabs(2);
+                  }}
+                >
+                  Ce jour
+                </TabsTrigger>
+                <TabsTrigger
+                  value="3"
+                  onClick={(e: any) => {
+                    setSelectedTabs(3);
+                  }}
+                >
+                  A venir
+                </TabsTrigger>
+                <TabsTrigger
+                  value="4"
+                  onClick={(e: any) => {
+                    setSelectedTabs(4);
+                  }}
+                >
+                  Passé
+                </TabsTrigger>
+                <TabsTrigger
+                  value="5"
+                  onClick={(e: any) => {
+                    setSelectedTabs(5);
+                  }}
+                >
+                  Annulé
+                </TabsTrigger>
               </TabsList>
             </Tabs>
           </div>
           <h2 className="text-3xl text-center font-extrabold">Rendez-vous</h2>
-          <div className='w-1/6 justify-end flex'><Button variant="outline" onClick={(e: any) => { fetchRdvs(user.id, user.role) }}>Actualiser</Button></div>
+          <div className="w-1/6 justify-end flex">
+            <Button
+              variant="outline"
+              onClick={(e: any) => {
+                fetchRdvs(user.id, user.role);
+              }}
+            >
+              Actualiser
+            </Button>
+          </div>
         </div>
         <Table className="w-full">
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[100px] text-center">Statut</TableHead>
+              <TableHead className="w-[100px]">Statut</TableHead>
               <TableHead>Patient</TableHead>
               <TableHead className="w-1/12">Date</TableHead>
               <TableHead>Heure</TableHead>
               <TableHead>Durée</TableHead>
-              <TableHead className='w-1/3'>Description</TableHead>
+              <TableHead className="w-1/3">Description</TableHead>
               <TableHead>Type</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredRdvs !== undefined ?
+            {filteredRdvs !== undefined ? (
               filteredRdvs?.map((rdv) => (
                 <LigneTableauListRDVDocteur key={rdv.id} rdv={rdv} />
-              )) :
-              <div>Vide</div>}
+              ))
+            ) : (
+              <div>Vide</div>
+            )}
           </TableBody>
         </Table>
       </div>
-    )
+    );
   } else {
-    return <Loader />
+    return <Loader />;
   }
 }
