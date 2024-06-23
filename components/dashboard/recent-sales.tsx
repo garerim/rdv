@@ -3,6 +3,7 @@
 import { RendezVous, UserProfile } from "@prisma/client";
 import { useEffect, useState } from "react";
 import RecentSalesItem from "./recent-sales-item";
+import { cn } from "@/lib/utils";
 
 type RendezVousWithPatient = RendezVous & {
   patient: {
@@ -17,12 +18,13 @@ interface RecentSalesProps {
   handleCountSale: (count: number) => void;
 }
 
-export function RecentSales({handleCountSale} : RecentSalesProps) {
+export function RecentSales({ handleCountSale }: RecentSalesProps) {
 
 
   const [jwtToken, setJwtToken] = useState<string | null>();
   const [user, setUser] = useState<any>({} as UserProfile);
   const [rendezVous, setRendezVous] = useState<RendezVousWithPatient[]>([])
+  const [countRdv, setCountRdv] = useState(0)
 
   useEffect(() => {
     const user = fetch("/api/userByJWT", {
@@ -35,8 +37,8 @@ export function RecentSales({handleCountSale} : RecentSalesProps) {
 
     user.then((res) => res.json()).then((data) => {
       setUser(data)
-      console.log(data);
-      
+      // console.log(data);
+
       const rdvs = fetch(`/api/rdvByUser?id=${data.id}`, {
         method: "GET",
       });
@@ -47,6 +49,7 @@ export function RecentSales({handleCountSale} : RecentSalesProps) {
         const currentYear = new Date().getFullYear();
 
         const count = data.filter((item: RendezVousWithPatient) => item.etat === "PASSE" && new Date(item.createdAt).getMonth() === currentMonth && new Date(item.createdAt).getFullYear() === currentYear).length;
+        setCountRdv(count)
 
         handleCountSale(count)
       });
@@ -54,73 +57,12 @@ export function RecentSales({handleCountSale} : RecentSalesProps) {
   }, [jwtToken]);
 
   return (
-    <div className="space-y-8">
-      {rendezVous && rendezVous.map((rdv, index) => (
+    <div className={cn("space-y-8 max-h-[320px]", countRdv > 4 && "overflow-y-scroll")}>
+      {rendezVous && rendezVous.map((rdv) => (
         <>
-          {rdv.etat === "PASSE" && <RecentSalesItem key={index} userPatient={rdv.patient} createdAt={rdv.createdAt} />}
+          {(rdv.etat === "PASSE" && new Date(rdv.createdAt).getMonth() === new Date().getMonth()) && <RecentSalesItem key={rdv.id} userPatient={rdv.patient} createdAt={rdv.createdAt} />}
         </>
       ))}
-
-      {/* <RecentSalesItem userPatient={userPatient} /> */}
-      {/* <div className="flex items-center">
-        <Avatar className="h-9 w-9">
-          <AvatarImage src="/avatars/01.png" alt="Avatar" />
-          <AvatarFallback>OM</AvatarFallback>
-        </Avatar>
-        <div className="ml-4 space-y-1">
-          <p className="text-sm font-medium leading-none">Olivia Martin</p>
-          <p className="text-sm text-muted-foreground">
-            olivia.martin@email.com
-          </p>
-        </div>
-        <div className="ml-auto font-medium">+$1,999.00</div>
-      </div>
-      <div className="flex items-center">
-        <Avatar className="flex h-9 w-9 items-center justify-center space-y-0 border">
-          <AvatarImage src="/avatars/02.png" alt="Avatar" />
-          <AvatarFallback>JL</AvatarFallback>
-        </Avatar>
-        <div className="ml-4 space-y-1">
-          <p className="text-sm font-medium leading-none">Jackson Lee</p>
-          <p className="text-sm text-muted-foreground">jackson.lee@email.com</p>
-        </div>
-        <div className="ml-auto font-medium">+$39.00</div>
-      </div>
-      <div className="flex items-center">
-        <Avatar className="h-9 w-9">
-          <AvatarImage src="/avatars/03.png" alt="Avatar" />
-          <AvatarFallback>IN</AvatarFallback>
-        </Avatar>
-        <div className="ml-4 space-y-1">
-          <p className="text-sm font-medium leading-none">Isabella Nguyen</p>
-          <p className="text-sm text-muted-foreground">
-            isabella.nguyen@email.com
-          </p>
-        </div>
-        <div className="ml-auto font-medium">+$299.00</div>
-      </div>
-      <div className="flex items-center">
-        <Avatar className="h-9 w-9">
-          <AvatarImage src="/avatars/04.png" alt="Avatar" />
-          <AvatarFallback>WK</AvatarFallback>
-        </Avatar>
-        <div className="ml-4 space-y-1">
-          <p className="text-sm font-medium leading-none">William Kim</p>
-          <p className="text-sm text-muted-foreground">will@email.com</p>
-        </div>
-        <div className="ml-auto font-medium">+$99.00</div>
-      </div>
-      <div className="flex items-center">
-        <Avatar className="h-9 w-9">
-          <AvatarImage src="/avatars/05.png" alt="Avatar" />
-          <AvatarFallback>SD</AvatarFallback>
-        </Avatar>
-        <div className="ml-4 space-y-1">
-          <p className="text-sm font-medium leading-none">Sofia Davis</p>
-          <p className="text-sm text-muted-foreground">sofia.davis@email.com</p>
-        </div>
-        <div className="ml-auto font-medium">+$39.00</div>
-      </div> */}
     </div>
   )
 }
