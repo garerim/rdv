@@ -52,7 +52,7 @@ async function main() {
         patientId: user.id,
         startDate: faker.date.future(),
         endDate: faker.date.future(),
-        duration: faker.number.float({ min: 1, max: 4 }),
+        duration: 30,
         etat: faker.helpers.arrayElement(Object.values(EtatRendezVous)),
         typeRendezVous: faker.helpers.arrayElement(Object.values(TypeRendezVous)),
         description: faker.lorem.paragraph(),

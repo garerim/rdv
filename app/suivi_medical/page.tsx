@@ -31,7 +31,7 @@ const formatDate = (dateString: any) => {
     });
 };
 
-export default function page() {
+export default function Page() {
 
     const [jwtToken, setJwtToken] = useState<string | null>();
     const [user, setUser] = useState<any>({} as UserProfile);
@@ -101,7 +101,7 @@ export default function page() {
     };
 
     const NoDataComponent = () => {
-        return <div className='flex justify-center p-10'><Label>Aucun diagnostique n'a encore été enregistré</Label></div>
+        return <div className='flex justify-center p-10'><Label>{"Aucun diagnostique n'a encore été enregistré"}</Label></div>
     }
 
     if (user.role === 'DOCTOR') {

@@ -1,5 +1,5 @@
-"use client"
-import React, { useState } from 'react';
+"use client";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,18 +19,21 @@ interface AntecedentFormDialogProps {
   onFormSubmit: () => void;
 }
 
-const AntecedentFormDialog: React.FC<AntecedentFormDialogProps> = ({ patientId, onFormSubmit }) => {
-  const [type, setType] = useState('CHIRURGICAL');
-  const [details, setDetails] = useState('');
-  const [dateAntecedent, setDateAntecedent] = useState('');
-  const [nomMedecin, setNomMedecin] = useState('');
+const AntecedentFormDialog: React.FC<AntecedentFormDialogProps> = ({
+  patientId,
+  onFormSubmit,
+}) => {
+  const [type, setType] = useState("CHIRURGICAL");
+  const [details, setDetails] = useState("");
+  const [dateAntecedent, setDateAntecedent] = useState("");
+  const [nomMedecin, setNomMedecin] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!dateAntecedent) {
-      setFormError('Veuillez sélectionner une date.');
+      setFormError("Veuillez sélectionner une date.");
       return;
     }
 
@@ -42,23 +45,23 @@ const AntecedentFormDialog: React.FC<AntecedentFormDialogProps> = ({ patientId, 
       userProfileId: patientId,
     };
 
-    const response = await fetch('/api/patient/create-antecedent', {
-      method: 'POST',
+    const response = await fetch("/api/patient/create-antecedent", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(antecedent),
     });
 
     if (response.ok) {
-      setType('CHIRURGICAL');
-      setDetails('');
-      setDateAntecedent('');
-      setNomMedecin('');
+      setType("CHIRURGICAL");
+      setDetails("");
+      setDateAntecedent("");
+      setNomMedecin("");
       setFormError(null);
       onFormSubmit();
     } else {
-      alert('Erreur lors de la création de l\'antécédent');
+      alert("Erreur lors de la création de l'antécédent");
     }
   };
 
@@ -71,7 +74,9 @@ const AntecedentFormDialog: React.FC<AntecedentFormDialogProps> = ({ patientId, 
         <DialogHeader>
           <DialogTitle>Ajouter un Antécédent</DialogTitle>
           <DialogDescription>
-            Remplissez les détails de l'antécédent ci-dessous. Cliquez sur 'Ajouter' une fois terminé.
+            {
+              "Remplissez les détails de l'antécédent ci-dessous. Cliquez sur 'Ajouter' une fois terminé."
+            }
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="grid gap-4 py-4">
@@ -120,9 +125,7 @@ const AntecedentFormDialog: React.FC<AntecedentFormDialogProps> = ({ patientId, 
               required
             />
           </div>
-          {formError && (
-            <p className="text-red-500">{formError}</p>
-          )}
+          {formError && <p className="text-red-500">{formError}</p>}
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="nomMedecin" className="text-right">
               Médecin
@@ -137,7 +140,13 @@ const AntecedentFormDialog: React.FC<AntecedentFormDialogProps> = ({ patientId, 
           </div>
           <DialogFooter>
             <DialogClose asChild>
-              {type && details && dateAntecedent && nomMedecin ? <Button type="submit" variant="outline">Ajouter</Button> : <Button disabled>Ajouter</Button>}
+              {type && details && dateAntecedent && nomMedecin ? (
+                <Button type="submit" variant="outline">
+                  Ajouter
+                </Button>
+              ) : (
+                <Button disabled>Ajouter</Button>
+              )}
             </DialogClose>
           </DialogFooter>
         </form>
