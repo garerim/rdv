@@ -106,7 +106,7 @@ export default function page() {
     if (user.role === 'DOCTOR') {
         return (
             <>
-                <div>
+                <div className='mx-2'>
                     <h1>Liste des patients</h1>
                     <CarnetPatient />
                 </div>
