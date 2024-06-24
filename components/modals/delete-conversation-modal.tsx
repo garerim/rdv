@@ -50,11 +50,11 @@ export const DeleteConversationModal = ({isModalOpen, handleClose, data} : Delet
             <DialogContent className="bg-white text-black p-0 overflow-hidden">
                 <DialogHeader className="pt-8 px-6">
                     <DialogTitle className="text-2xl text-center font-bold">
-                        Delete Conversation
+                        Supprimer Conversation
                     </DialogTitle>
                     <DialogDescription className="text-center text-zinc-500">
-                        Are you sure you want to do this ? <br />
-                        The conversation will be permanently deleted.
+                        Êtes-vous sûr de faire cela ? <br />
+                        La conversation sera définitivement supprimée.
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter className="bg-grey-100 px-6 py-4">
@@ -63,14 +63,14 @@ export const DeleteConversationModal = ({isModalOpen, handleClose, data} : Delet
                             disabled={isLoading}
                             onClick={handleClose}
                             variant={'ghost'}
-                        >Cancel</Button>
+                        >Annuler</Button>
 
 
                         <Button
                             disabled={isLoading}
-                            variant={'primary'}
+                            variant={'destructive'}
                             onClick={onClick}
-                        >Confirm</Button>
+                        >Valider</Button>
                     </div>
                 </DialogFooter>
             </DialogContent>

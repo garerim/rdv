@@ -31,7 +31,7 @@ export default function RootLayout({
           <GlobaleProvider>
             <SocketProvider>
               <Header />
-              <div className="absolute pt-[100px] w-full h-full">
+              <div className="relative pt-[100px] w-full h-full">
                 {children}
               </div>
             </SocketProvider>

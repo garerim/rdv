@@ -1,7 +1,7 @@
 "use client";
 
+import { Disconnected } from "@/components/disconnected/disconnected";
 import { Loader } from "@/components/loader/Loader";
-import NotConnected from "@/components/notConnected/NotConnected";
 import AccountSettings from "@/components/pageSections/user_profile/AccountSettings";
 import Billing from "@/components/pageSections/user_profile/Billing";
 import PersonalInfo from "@/components/pageSections/user_profile/PersonalInfo";
@@ -73,7 +73,7 @@ export default function UserProfile() {
       {!isMounted ? (
         <Loader />
       ) : !jwtToken ? (
-        <NotConnected />
+        <Disconnected />
       ) : (
         <>
           <div className="flex justify-center items-start w-full">

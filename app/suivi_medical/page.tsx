@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/accordion"
 import { Label } from '@/components/ui/label';
 import { CarnetPatient } from '@/components/patient/carnetPatients';
+import { Disconnected } from '@/components/disconnected/disconnected';
 
 const VerticalBarMain = () => {
     return <div className="w-1 min-h-full bg-cyan-800 mr-4 text-cyan-800">.</div>;
@@ -127,6 +128,11 @@ export default function page() {
                     </Accordion>
                     : <NoDataComponent /> : <NoDataComponent />}
             </div>
+        )
+    }
+    else {
+        return (
+            <Disconnected />
         )
     }
 }
