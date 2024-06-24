@@ -5,13 +5,10 @@ import { Overview } from "@/components/dashboard/overview";
 import { RecentSales } from "@/components/dashboard/recent-sales";
 import { Loader } from "@/components/loader/Loader";
 import NotConnected from "@/components/notConnected/NotConnected";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { isTokenExpired } from "@/lib/utils";
 import { UserProfile } from "@prisma/client";
 import { Ban, Euro, Hourglass, Users } from "lucide-react";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 
 type DashboardDataType = {
@@ -87,7 +84,9 @@ export default function Dashboard() {
 
     user.then((res) => res.json()).then((data) => {
       setUser(data)
-      // console.log(data.id);
+      if (data.role === "USER") {
+        window.location.href = "/"
+      }
 
       const dashboard = fetch(`/api/getDashboard?id=${data.id}`, {
         method: "GET",
