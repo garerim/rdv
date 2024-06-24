@@ -1,8 +1,5 @@
 "use client";
 
-import CheckoutButton from "@/components/checkout/index";
-import { Disconnected } from "@/components/disconnected/disconnected";
-import { Loader } from "@/components/loader/Loader";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,10 +27,9 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Trash2 } from "lucide-react";
 import { Loader } from "@/components/loader/Loader";
 import { Disconnected } from "@/components/disconnected/disconnected";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
   Card,
   CardContent,
   CardDescription,
