@@ -1,9 +1,10 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { prisma } from '@/lib/prisma';
 import { cn } from '@/lib/utils';
 import Link from 'next/link'
+import { useGlobale } from '../provider/globale-provider';
+import { UserProfile } from '@prisma/client';
 
-type MessageItemProps = {
+export type MessageItemProps = {
   message: {
     id: string;
     userProfileId: string;
@@ -12,9 +13,12 @@ type MessageItemProps = {
     isLiked: boolean;
     createdAt: Date;
     updatedAt: Date;
+    user: UserProfile;
   }
 }
+
 function convertDate(date: Date) {
+  date = new Date(date);
   const today = new Date();
 
   const isToday = date.getDate() === today.getDate() &&
@@ -43,31 +47,32 @@ function convertDate(date: Date) {
   }
 }
 
-export default async function MessageItem({ message }: MessageItemProps) {
+export default function MessageItem({ message }: MessageItemProps ) {
 
-  const user = await prisma.userProfile.findUnique({
-    where: {
-      id: message.userProfileId
-    }
-  })
+  const userProfile = message.user;
+  const { user } = useGlobale();
+
+  if (!user) {
+    return;
+  }
 
   return (
-    <div className={cn("relative group flex items-center p-4 transition max-w-[60%] min-w-[30%] border rounded-lg bg-secondary", user?.id === message.userProfileId && "self-end")}>
-      <div className={cn("group flex gap-x-2 items-start w-full", user?.id === message.userProfileId && "flex-row-reverse")}>
+    <div className={cn("relative group flex items-center p-4 transition max-w-[60%] min-w-[30%] border rounded-lg bg-secondary", user.id === userProfile.id ? "self-end" : "self-start")}>
+      <div className={cn("group flex gap-x-2 items-start w-full", user.id === userProfile.id && "flex-row-reverse")}>
         <div className="cursor-pointer hover:drop-shadow-md transition">
           <Avatar>
-            <AvatarImage src={user?.avatar as string | undefined} alt="@shadcn" />
-            <AvatarFallback>{user?.firstName.charAt(0).toUpperCase()}{user?.lastName.charAt(0).toUpperCase()}</AvatarFallback>
+            <AvatarImage src={userProfile.avatar as string | undefined} alt="@shadcn" />
+            <AvatarFallback>{userProfile.firstName.charAt(0).toUpperCase()}{userProfile.lastName.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
         </div>
         <div className={cn("flex flex-col w-full")}>
-          <div className={cn("flex items-center gap-x-2", user?.id === message.userProfileId && "self-end flex-row-reverse")}>
+          <div className={cn("flex items-center gap-x-2", user.id === userProfile.id && "self-end flex-row-reverse")}>
             <div className="flex items-center">
-              <Link className="font-semibold text-sm hover:underline cursor-pointer" href='/'>{user?.firstName} {user?.lastName}</Link>
+              <Link className="font-semibold text-sm hover:underline cursor-pointer" href='/'>{userProfile.firstName} {userProfile.lastName}</Link>
             </div>
             <span className="text-xs text-zinc-500 dark:text-zinc-400">{convertDate(message.createdAt)}</span>
           </div>
-          <div className={cn(user?.id === message.userProfileId && "self-end")}>
+          <div className={cn(user.id === userProfile.id && "self-end")}>
             {message.text}
           </div>
         </div>

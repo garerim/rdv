@@ -54,7 +54,7 @@ export default function PersonalInfo({
     <div className="flex flex-col w-full gap-10 items-center mb-20">
       <Label className="w-full text-3xl">Informations personnelles</Label>
       <Separator className="w-[90%]" />
-      <form action="#" className="flex flex-col gap-5 w-[80%]">
+      <form action="#" method="POST" className="flex flex-col gap-5 w-[80%]">
         <div className="flex gap-2 items-center">
           <Label className="text-lg">Date de naissance:</Label>
           <Label>
@@ -178,7 +178,9 @@ export default function PersonalInfo({
         </div>
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-3">
-            {!modifyJob ? (
+            {userTemp?.role !== "USER" ? (
+              <></>
+            ) : !modifyJob ? (
               <PencilLine
                 className="cursor-pointer"
                 onClick={() => setModifyJob(true)}
@@ -199,15 +201,24 @@ export default function PersonalInfo({
             id="job"
             name="job"
             placeholder="Métier"
-            value={userTemp?.metier as string}
+            value={userTemp?.metier !== "USER" ? userTemp?.role : userTemp.metier}
             onChange={(e: any) => {
               setUserTemp({ ...userTemp, metier: e.target.value });
               //console.log("usertemp: ", userTemp);
             }}
           />
         </div>
-        <Button disabled={user === userTemp} onClick={handleSave} className="fixed bottom-5 right-10 w-32">
-          <input className="cursor-pointer" type="submit" value="Enregistrer" onSubmit={handleSave} />
+        <Button
+          disabled={user === userTemp}
+          onClick={handleSave}
+          className="fixed bottom-5 right-10 w-32"
+        >
+          <input
+            className="cursor-pointer"
+            type="submit"
+            value="Enregistrer"
+            onSubmit={handleSave}
+          />
         </Button>
       </form>
     </div>

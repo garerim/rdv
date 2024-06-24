@@ -15,9 +15,10 @@ export default async function handler(
 
 async function getSuivisByUser(req: NextApiRequest, res: NextApiResponse) {
     try {
+        const {id} = req.query
         const suivis = await prisma.suivi.findMany({
         where:{
-            patientProfileId : req.body.id
+            patientProfileId : id as string
         }
         })
       res.status(200).json(suivis);

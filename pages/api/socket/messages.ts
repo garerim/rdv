@@ -11,12 +11,8 @@ export default async function handler (
     }
 
     try {
-        // const profile = await currentProfilePages(req);
-        const {content, conversationId} = req.body;
+        const {content, conversationId, userProfileId} = req.body;
 
-        // if (!profile) {
-        //     return res.status(401).json({ message: "Unauthorized" });
-        // }
         if (!conversationId) {
             return res.status(401).json({ message: "Server ID Missing" });
         }
@@ -28,15 +24,24 @@ export default async function handler (
             data: {
                 text: content,
                 conversationId: conversationId,
-                userProfileId: "d075b56e-d3b6-4f80-b8ab-95c808093f11"
-                
+                userProfileId: userProfileId
             }
         });
 
-        const conversationKey = `chat:${conversationId
-        }:messages`;
+        const conversationKey = `chat:${conversationId}:messages`;
 
-        res?.socket?.server?.io?.emit(conversationKey, message);
+        const user = await prisma.userProfile.findUnique({
+            where: {
+                id: userProfileId
+            }
+        });
+
+        const messageWithUser = {
+            ...message,
+            user: user
+        }
+
+        res?.socket?.server?.io?.emit(conversationKey, messageWithUser);
 
         return res.status(200).json(message);
 

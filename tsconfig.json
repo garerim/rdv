@@ -22,6 +22,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts","lib/cron-notif.js", "lib/cron.js", "pages/billing.js", "lib/pdfGenerator.ts", "pages/api/stripe/stripe-webhooks.js", "pages/api/stripe/stripe-webhooks.js", "env.d.ts", "components/checkout/index.jss"],
   "exclude": ["node_modules"]
 }

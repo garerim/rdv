@@ -312,7 +312,7 @@ model RendezVous {
   duration       Float
   etat           EtatRendezVous @default(A_VENIR)
   typeRendezVous TypeRendezVous @default(CONSULTATION)
-  description    String
+  description    String         @db.LongText
   prix           Float
   fichierJoint   String
 
