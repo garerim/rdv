@@ -38,7 +38,7 @@ const TransformToAntecedentDialog: React.FC<TransformToAntecedentDialogProps> = 
         </DialogDescription>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Annuler</Button>
-          <Button variant="default" onClick={handleConfirm}>Confirmer</Button>
+          {selectedType ? <Button type="submit" variant="outline" onClick={handleConfirm}>Confirmer</Button> : <Button disabled>Confirmer</Button>}
         </DialogFooter>
       </DialogContent>
     </Dialog>

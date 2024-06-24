@@ -78,7 +78,7 @@ const SuiviForm: React.FC<SuiviFormProps> = ({ patientProfileId, onFormSubmit })
           </div>
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="submit">Enregistrer</Button>
+              {diagnostique && traitement ? <Button type="submit" variant="outline">Enregistrer</Button> : <Button disabled>Enregistrer</Button>}
             </DialogClose>
           </DialogFooter>
         </form>

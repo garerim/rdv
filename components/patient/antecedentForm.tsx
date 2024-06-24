@@ -137,7 +137,7 @@ const AntecedentFormDialog: React.FC<AntecedentFormDialogProps> = ({ patientId, 
           </div>
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="submit">Ajouter</Button>
+              {type && details && dateAntecedent && nomMedecin ? <Button type="submit" variant="outline">Ajouter</Button> : <Button disabled>Ajouter</Button>}
             </DialogClose>
           </DialogFooter>
         </form>
