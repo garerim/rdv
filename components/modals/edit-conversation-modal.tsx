@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
-import qs from "query-string";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
@@ -55,7 +54,6 @@ export const EditConversationModal = ({isModalOpen, handleClose, data} : EditCon
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-    //   const url = qs.stringifyUrl({url: });
       await axios.patch(`/api/conversations/${conversationId}`, {
         ...values
       });
