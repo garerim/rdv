@@ -93,8 +93,8 @@ export const AddConversationModal = ({ isModalOpen, handleClose }: AddConversati
       });
 
       form.reset();
-      handleClose();
       router.refresh();
+      handleClose();
     } catch (error) {
       console.log(error);
     }

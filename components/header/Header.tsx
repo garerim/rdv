@@ -8,11 +8,14 @@ import { Loader } from "../loader/Loader";
 import { Separator } from "../ui/separator";
 import "./header.css"
 import Link from "next/link";
+import { useGlobale } from "../provider/globale-provider";
 
 export default function Header() {
-    const [ isMounted, setIsMounted ] = useState(false)
-    const [ jwtToken, setJwtToken ] = useState<string | null>();
-    const [ jwtExp, setJwtExp ] = useState<string | null>();
+    const [isMounted, setIsMounted] = useState(false)
+    const [jwtToken, setJwtToken] = useState<string | null>();
+    const [jwtExp, setJwtExp] = useState<string | null>();
+
+    const { user } = useGlobale();
 
     const DisconnectManager = () => {
         const foo = Disconnect(jwtToken, jwtExp)
@@ -60,8 +63,9 @@ export default function Header() {
                 <div className="flex items-center gap-4">
                     <h2 className="text-2xl font-bold cursor-pointer m-0 p-0" onClick={() => window.location.href = '/'}>Rendez-vous</h2>
                     <Separator orientation="vertical" className="relative mx-5 h-[40px] bg-foreground" />
-
-                    <Link href="dashboard" className="text-secondary-foreground underline-offset-4 hover:underline">Dashboard</Link>
+                    {user && user.role === 'DOCTOR' && (
+                        <Link href="dashboard" className="text-secondary-foreground underline-offset-4 hover:underline">Dashboard</Link>
+                    )}
                     <Link href="profile" className="text-secondary-foreground underline-offset-4 hover:underline">Profil</Link>
                     <Link href="rendez_vous" className="text-secondary-foreground underline-offset-4 hover:underline">Rendez-Vous</Link>
                     <Link href="suivi_medical" className="text-secondary-foreground underline-offset-4 hover:underline">Suivi</Link>
@@ -74,9 +78,9 @@ export default function Header() {
                             <Button onClick={() => window.location.href = '/login'} variant={"outline"}>Se connecter</Button>
                             <Button onClick={() => window.location.href = '/register'}>S`inscrire</Button>
                         </>
-                        ) : (
-                            <Button onClick={() => DisconnectManager() }>Se déconnecter</Button>
-                        )
+                    ) : (
+                        <Button onClick={() => DisconnectManager()}>Se déconnecter</Button>
+                    )
                     )}
                     <ThemeToggle />
                 </div>
