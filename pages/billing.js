@@ -1,4 +1,4 @@
-import CheckoutButton from "@/components/checkout";
+
 import Head from "next/head";
 
 export default function Checkout() {
@@ -9,7 +9,7 @@ export default function Checkout() {
       </Head>
       <div className="flex h-screen justify-center items-center">
         <div>
-          <CheckoutButton amount={1} />
+          <CheckoutButton amount={1}/>
         </div>
       </div>
     </>

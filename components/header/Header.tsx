@@ -67,6 +67,7 @@ export default function Header() {
                         <Link href="dashboard" className="text-secondary-foreground underline-offset-4 hover:underline">Dashboard</Link>
                     )}
                     <Link href="profile" className="text-secondary-foreground underline-offset-4 hover:underline">Profil</Link>
+                    <Link href="rendez_vous" className="text-secondary-foreground underline-offset-4 hover:underline">Rendez-Vous</Link>
                     <Link href="suivi_medical" className="text-secondary-foreground underline-offset-4 hover:underline">Suivi</Link>
                     <Link href="conversations" className="text-secondary-foreground underline-offset-4 hover:underline">Conversations</Link>
                     <Link href="..." className="text-secondary-foreground underline-offset-4 hover:underline">...</Link>
