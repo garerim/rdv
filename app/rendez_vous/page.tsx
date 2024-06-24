@@ -69,6 +69,8 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import CheckoutButton from "@/components/checkout/index";
+import { useRouter } from 'next/navigation';
 import { Trash2 } from "lucide-react";
 import { Loader } from "@/components/loader/Loader";
 import { Disconnected } from "@/components/disconnected/disconnected";
@@ -88,9 +90,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { fr } from "date-fns/locale";import CheckoutButton from "@/components/checkout/index";
-import { useRouter } from 'next/navigation';
-import { Amarante } from 'next/font/google';
+import { fr } from "date-fns/locale";
 
 const rdvTypes = [
   {
@@ -170,7 +170,6 @@ export default function Page() {
   const [error, setError] = useState<boolean>(false);
 
   ///////////////////////////////////////////////////////////////////
-
 
   // Executuion dès le lancement de la page
   useEffect(() => {
@@ -661,77 +660,140 @@ export default function Page() {
               >
                 Actualiser
               </Button>
-            </div>
-            <div>
-              <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="outline" onClick={resetBooking}>
-                    Prendre Rendez-vous
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px] max-h-[600px]">
-                  <DialogHeader>
-                    <DialogTitle>Prendre rendez-vous</DialogTitle>
-                    <DialogDescription>
-                      {rdvStep === 1
-                        ? "Sélectionnez une date afin de prendre un rendez-vous."
-                        : rdvStep === 2
-                        ? "Sélectionnez un médecin et un créneau libre."
-                        : "Sélectionnez le type de rendez-vous souhaité, et expliquer la raison de ce rendez-vous."}
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4 justify-center">
-                    {rdvStep === 1 ? (
-                      <Calendar
-                        mode="single"
-                        selected={date}
-                        onSelect={setDate}
-                        className="rounded-md border"
-                        disabled={[
-                          { before: new Date() },
-                          { dayOfWeek: [0, 6] },
-                        ]}
-                        weekStartsOn={1}
-                        locale={fr}
-                      />
-                      
-                ) : rdvStep === 2 ? (
+              <Button variant="outline" onClick={resetBooking}>
+                Prendre Rendez-vous
+              </Button>
+              <DialogContent className="sm:max-w-[425px] max-h-[600px]">
+                <DialogHeader>
+                  <DialogTitle>Prendre rendez-vous</DialogTitle>
+                  <DialogDescription>
+                    {rdvStep === 1
+                      ? "Sélectionnez une date afin de prendre un rendez-vous."
+                      : rdvStep === 2
+                      ? "Sélectionnez un médecin et un créneau libre."
+                      : "Sélectionnez le type de rendez-vous souhaité, et expliquer la raison de ce rendez-vous."}
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4 justify-center">
+                  {rdvStep === 1 ? (
+                    <Calendar
+                      mode="single"
+                      selected={date}
+                      onSelect={setDate}
+                      className="rounded-md border"
+                      disabled={[
+                        { before: new Date() },
+                        { dayOfWeek: [0, 6] },
+                      ]}
+                      weekStartsOn={1}
+                      locale={fr}
+                    />
+                  ) : rdvStep === 2 ? (
+                    <>
+                      <Popover open={open} onOpenChange={setOpen}>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            aria-expanded={open}
+                            className="w-60 justify-between"
+                          >
+                            {selectedDoc
+                              ? fullNameOf(
+                                  allMedecins!.find(
+                                    (medecin) => medecin.id === selectedDoc
+                                  )
+                                ) || "Sélectionner un médecin"
+                              : "Sélectionner un médecin"}
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-60 p-0">
+                          <Command>
+                            <CommandList>
+                              <CommandEmpty>
+                                Aucun médecin trouvé.
+                              </CommandEmpty>
+                              <CommandGroup>
+                                {allMedecins!.map((medecin) => (
+                                  <CommandItem
+                                    key={medecin.id}
+                                    value={medecin.id}
+                                    onSelect={(currentValue) => {
+                                      setSelectedDoc(currentValue);
+                                      setOpen(false);
+                                    }}
+                                  >
+                                    {fullNameOf(medecin)}
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                      <Separator className="my-4"></Separator>
+                      <ScrollArea className="max-h-60">
+                        <Table className="w-full mt-2">
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Date</TableHead>
+                              <TableHead>Heure</TableHead>
+                              <TableHead>Durée</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {allFreeRdvs?.map((rdv) => (
+                              <LigneTableauCrenauxHoraires
+                                key={rdv}
+                                date={rdv}
+                              />
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </ScrollArea>
+                    </>
+                  ) : (
+                    rdvStep === 3 && (
                       <>
+                        <div className="flex gap-4 justify-center">
+                          <p>{formatDate(selectedRdv)}</p>
+                          <Separator orientation="vertical" />
+                          <p>{formatHour(selectedRdv)}</p>
+                          <Separator orientation="vertical" />
+                          <p>30 min</p>
+                        </div>
+                        <Separator className="my-4"></Separator>
                         <Popover open={open} onOpenChange={setOpen}>
                           <PopoverTrigger asChild>
                             <Button
                               variant="outline"
                               role="combobox"
                               aria-expanded={open}
-                              className="w-60 justify-between"
+                              className="w-[350px] justify-between"
                             >
-                              {selectedDoc
-                                ? fullNameOf(
-                                    allMedecins!.find(
-                                      (medecin) => medecin.id === selectedDoc
-                                    )
-                                  ) || "Sélectionner un médecin"
-                                : "Sélectionner un médecin"}
+                              {selectedType
+                                ? rdvTypes.find(
+                                    (type) => type.value === selectedType
+                                  )?.label
+                                : "Sélectionner un type de rendez-vous..."}
                               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                             </Button>
                           </PopoverTrigger>
-                          <PopoverContent className="w-60 p-0">
+                          <PopoverContent className="w-[350px] p-0">
                             <Command>
                               <CommandList>
-                                <CommandEmpty>
-                                  Aucun médecin trouvé.
-                                </CommandEmpty>
                                 <CommandGroup>
-                                  {allMedecins!.map((medecin) => (
+                                  {rdvTypes.map((type) => (
                                     <CommandItem
-                                      key={medecin.id}
-                                      value={medecin.id}
+                                      key={type.value}
+                                      value={type.value}
                                       onSelect={(currentValue) => {
-                                        setSelectedDoc(currentValue);
+                                        setSelectedType(currentValue);
                                         setOpen(false);
                                       }}
                                     >
-                                      {fullNameOf(medecin)}
+                                      {type.label}
                                     </CommandItem>
                                   ))}
                                 </CommandGroup>
@@ -740,183 +802,110 @@ export default function Page() {
                           </PopoverContent>
                         </Popover>
                         <Separator className="my-4"></Separator>
-                        <ScrollArea className="max-h-60">
-                          <Table className="w-full mt-2">
-                            <TableHeader>
-                              <TableRow>
-                                <TableHead>Date</TableHead>
-                                <TableHead>Heure</TableHead>
-                                <TableHead>Durée</TableHead>
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {allFreeRdvs?.map((rdv) => (
-                                <LigneTableauCrenauxHoraires
-                                  key={rdv}
-                                  date={rdv}
-                                />
-                              ))}
-                            </TableBody>
-                          </Table>
-                        </ScrollArea>
-                      </>
-                    ) : (
-                      rdvStep === 3 && (
-                        <>
-                          <div className="flex gap-4 justify-center">
-                            <p>{formatDate(selectedRdv)}</p>
-                            <Separator orientation="vertical" />
-                            <p>{formatHour(selectedRdv)}</p>
-                            <Separator orientation="vertical" />
-                            <p>30 min</p>
-                          </div>
-                          <Separator className="my-4"></Separator>
-                          <Popover open={open} onOpenChange={setOpen}>
-                            <PopoverTrigger asChild>
-                              <Button
-                                variant="outline"
-                                role="combobox"
-                                aria-expanded={open}
-                                className="w-[350px] justify-between"
-                              >
-                                {selectedType
-                                  ? rdvTypes.find(
-                                      (type) => type.value === selectedType
-                                    )?.label
-                                  : "Sélectionner un type de rendez-vous..."}
-                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-[350px] p-0">
-                              <Command>
-                                <CommandList>
-                                  <CommandGroup>
-                                    {rdvTypes.map((type) => (
-                                      <CommandItem
-                                        key={type.value}
-                                        value={type.value}
-                                        onSelect={(currentValue) => {
-                                          setSelectedType(currentValue);
-                                          setOpen(false);
-                                        }}
-                                      >
-                                        {type.label}
-                                      </CommandItem>
-                                    ))}
-                                  </CommandGroup>
-                                </CommandList>
-                              </Command>
-                            </PopoverContent>
-                          </Popover>
-                          <Separator className="my-4"></Separator>
-                          <div className="grid w-full max-w-sm items-center gap-1.5">
-                            <Label htmlFor="email">Description</Label>
-                            <Textarea
-                              placeholder="Pourquoi souhaitez-vous un rendez-vous ?"
-                              value={selectedDescription}
-                              onChange={(e: any) => {
-                                setSelectedDescription(e.target.value);
-                              }}
-                            />
-                          </div>
-                        </>
-                      )
-                    )}
-                  </div>
-                  <DialogFooter>
-                    <div className="justify-center w-full flex-col">
-                      {error && (
-                        <div className="text-red-600 text-center w-full text-sm font-semibold my-3">
-                          {rdvStep === 2
-                            ? "Veuillez sélectionner un médecin pour continuer"
-                            : "Veuillez remplir tous les champs"}
-                        </div>
-                      )}
-                      <div className="flex w-full">
-                        <div className="w-1/2 flex justify-start">
-                          <Button onClick={decrementRdvStep} variant="outline">
-                            {rdvStep === 1 ? "Annuler" : "Retour"}
-                          </Button>
-                        </div>
-                        <div className="w-1/2 flex justify-end">
-                          {rdvStep === 3 ? (
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                {selectedType && selectedDescription ? (
-                                  <Button variant="outline">Valider</Button>
-                                ) : (
-                                  <Button disabled>Valider</Button>
-                                )}
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>
-                                    Confirmer la réservation ?
-                                  </AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    <div>
-                                      Une fois validée, cette réservation vous
-                                      sera facturée, voici un récapitulatif :
-                                    </div>
-                                    <div className="flex gap-4 justify-center">
-                                      <p>{formatDate(selectedRdv)}</p>
-                                      <Separator orientation="vertical" />
-                                      <p>{formatHour(selectedRdv)}</p>
-                                      <Separator orientation="vertical" />
-                                      <p>30 min</p>
-                                    </div>
-                                    <Separator />
-                                    <div className="flex justify-between p-4">
-                                      <div>
-                                        {fullNameOf(
-                                          allMedecins?.find(
-                                            (medecin) =>
-                                              medecin.id === selectedDoc
-                                          )
-                                        )}
-                                      </div>
-                                      <Separator orientation="vertical" />
-                                      <div>{selectedType}</div>
-                                    </div>
-                                    <Separator />
-                                    <div className="m-4">
-                                      {selectedDescription}
-                                    </div>
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Annuler</AlertDialogCancel>
-                                  {/*<AlertDialogAction onClick={createRdv}>
-                                    Confirmer
-                                  </AlertDialogAction>*/}
-                          <CheckoutButton
-                            amount={prices[value]}
-                            description={selectedDescription}
-                            doc={selectedDoc}
-                            selectedTime={selectedRdv}
-                            type={selectedType}
+                        <div className="grid w-full max-w-sm items-center gap-1.5">
+                          <Label htmlFor="email">Description</Label>
+                          <Textarea
+                            placeholder="Pourquoi souhaitez-vous un rendez-vous ?"
+                            value={selectedDescription}
+                            onChange={(e: any) => {
+                              setSelectedDescription(e.target.value);
+                            }}
                           />
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                          ) : rdvStep === 2 ? (
-                            <Button disabled>Suivant</Button>
-                          ) : date ? (
-                            <Button
-                              onClick={incrementRdvStep}
-                              variant="outline"
-                            >
-                              Suivant
-                            </Button>
-                          ) : (
-                            <Button disabled>Suivant</Button>
-                          )}
                         </div>
+                      </>
+                    )
+                  )}
+                </div>
+                <DialogFooter>
+                  <div className="justify-center w-full flex-col">
+                    {error && (
+                      <div className="text-red-600 text-center w-full text-sm font-semibold my-3">
+                        {rdvStep === 2
+                          ? "Veuillez sélectionner un médecin pour continuer"
+                          : "Veuillez remplir tous les champs"}
+                      </div>
+                    )}
+                    <div className="flex w-full">
+                      <div className="w-1/2 flex justify-start">
+                        <Button onClick={decrementRdvStep} variant="outline">
+                          {rdvStep === 1 ? "Annuler" : "Retour"}
+                        </Button>
+                      </div>
+                      <div className="w-1/2 flex justify-end">
+                        {rdvStep === 3 ? (
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              {selectedType && selectedDescription ? (
+                                <Button variant="outline">Valider</Button>
+                              ) : (
+                                <Button disabled>Valider</Button>
+                              )}
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                  Confirmer la réservation ?
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  <div>
+                                    Une fois validée, cette réservation vous
+                                    sera facturée, voici un récapitulatif :
+                                  </div>
+                                  <div className="flex gap-4 justify-center">
+                                    <p>{formatDate(selectedRdv)}</p>
+                                    <Separator orientation="vertical" />
+                                    <p>{formatHour(selectedRdv)}</p>
+                                    <Separator orientation="vertical" />
+                                    <p>30 min</p>
+                                  </div>
+                                  <Separator />
+                                  <div className="flex justify-between p-4">
+                                    <div>
+                                      {fullNameOf(
+                                        allMedecins?.find(
+                                          (medecin) =>
+                                            medecin.id === selectedDoc
+                                        )
+                                      )}
+                                    </div>
+                                    <Separator orientation="vertical" />
+                                    <div>{selectedType}</div>
+                                  </div>
+                                  <Separator />
+                                  <div className="m-4">
+                                    {selectedDescription}
+                                  </div>
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Annuler</AlertDialogCancel>
+                                <CheckoutButton
+                                  amount={Number(prices[value])}
+                                  description={selectedDescription}
+                                  doc={selectedDoc}
+                                  selectedTime={selectedRdv}
+                                  type={selectedType}
+                                />
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        ) : rdvStep === 2 ? (
+                          <Button disabled>Suivant</Button>
+                        ) : date ? (
+                          <Button
+                            onClick={incrementRdvStep}
+                            variant="outline"
+                          >
+                            Suivant
+                          </Button>
+                        ) : (
+                          <Button disabled>Suivant</Button>
+                        )}
                       </div>
                     </div>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+                  </div>
+                </DialogFooter>
+              </DialogContent>
             </div>
           </div>
         </div>
@@ -996,9 +985,9 @@ export default function Page() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {/*{filteredRdvs?.map((rdv) => (
+            {filteredRdvs?.map((rdv) => (
               <LigneTableauListRDVUser key={rdv.id} rdv={rdv} />
-            ))}*/}
+            ))}
           </TableBody>
         </Table>
       </div>
