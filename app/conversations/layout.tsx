@@ -46,6 +46,10 @@ export default function MesConversations({ children }: { children: React.ReactNo
 
         user.then((res) => res.json()).then((data) => {
             setUser(data)
+            
+            if (data.error){
+                window.location.href = "/"
+            }
             const conversations = fetch(`/api/conversationsByUser`, {
                 method: "POST",
                 headers: {
