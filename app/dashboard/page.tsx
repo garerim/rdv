@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { isTokenExpired } from "@/lib/utils";
 import { UserProfile } from "@prisma/client";
-import { Euro, Users } from "lucide-react";
+import { Ban, Euro, Hourglass, Users } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
@@ -19,6 +19,9 @@ type DashboardDataType = {
   lastTotalRevenus: number;
   totalSubscriptions: number;
   lastTotalSubscriptions: number;
+  totalSubscriptionsComing: number;
+  totalSubscriptionsCancelled: number;
+  lastTotalSubscriptionsCancelled: number;
   overview: number[];
 }
 
@@ -92,11 +95,6 @@ export default function Dashboard() {
 
       dashboard.then((res) => res.json()).then((data) => {
         setDashboardData(data);
-        // console.log(data.overview);
-
-        // console.log("last : ", data.lastTotalRevenus);
-        // console.log("today : ", data.totalRevenus);
-
       });
     });
   }, [jwtToken]);
@@ -129,81 +127,36 @@ export default function Dashboard() {
                   <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
                   <div className="flex items-center space-x-2">
                     {/* <CalendarDateRangePicker /> */}
-                    <Button>Download</Button>
+                    {/* <Button>Download</Button> */}
                   </div>
                 </div>
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                   {dashboardData && (
                     <>
-                      <DashboardCard title="Total Revenue" IconCard={Euro} amount={dashboardData.totalRevenus * user.prixPcr} devise="€" footer={`${calculerPourcentage(dashboardData.lastTotalRevenus, dashboardData.totalRevenus)} from last month`} />
-                      <DashboardCard title="Subscriptions" IconCard={Users} amount={dashboardData.totalSubscriptions} footer={`${calculerPourcentage(dashboardData.lastTotalSubscriptions, dashboardData.totalSubscriptions)} from last month`} />
+                      <DashboardCard title="Total Revenue" IconCard={Euro} amount={dashboardData.totalRevenus * user.prixPcr} devise="€" footer={`${calculerPourcentage(dashboardData.lastTotalRevenus, dashboardData.totalRevenus)} par rapport au mois dernier`} />
+
+                      <DashboardCard title="Nombre Rendez-vous" IconCard={Users} amount={dashboardData.totalSubscriptions} footer={`${calculerPourcentage(dashboardData.lastTotalSubscriptions, dashboardData.totalSubscriptions)} par rapport au mois dernier`} />
+
+                      <DashboardCard title="Rendez-vous à venir" IconCard={Hourglass} amount={dashboardData.totalSubscriptionsComing} footer={``} link="/rendez_vous" />
+
+                      <DashboardCard title="Taux d'annulation" IconCard={Ban} amount={dashboardData.totalSubscriptionsCancelled} footer={`${calculerPourcentage(dashboardData.lastTotalSubscriptionsCancelled, dashboardData.totalSubscriptionsCancelled)} par rapport au mois dernier`} />
                     </>
                   )}
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Sales</CardTitle>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        className="h-4 w-4 text-muted-foreground"
-                      >
-                        <rect width="20" height="14" x="2" y="5" rx="2" />
-                        <path d="M2 10h20" />
-                      </svg>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">+12,234</div>
-                      <p className="text-xs text-muted-foreground">
-                        +19% from last month
-                      </p>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">
-                        Active Now
-                      </CardTitle>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        className="h-4 w-4 text-muted-foreground"
-                      >
-                        <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                      </svg>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">+573</div>
-                      <p className="text-xs text-muted-foreground">
-                        +201 since last hour
-                      </p>
-                    </CardContent>
-                  </Card>
                 </div>
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
                   <Card className="col-span-4">
                     <CardHeader>
-                      <CardTitle>Overview</CardTitle>
+                      <CardTitle>Vue d'ensemble</CardTitle>
                     </CardHeader>
                     <CardContent className="pl-2">
-                      {/* {user && dashboardData.overview && <Overview user={user} overviewData={dashboardData.overview} />} */}
                       <Overview user={user} overviewData={dashboardData.overview} />
                     </CardContent>
                   </Card>
                   <Card className="col-span-3">
                     <CardHeader>
-                      <CardTitle>Recent Sales</CardTitle>
+                      <CardTitle>Consultations Récentes</CardTitle>
                       <CardDescription>
-                        You made {countSale} sales this month.
+                        Vous avez fait {countSale} consultations ce mois-ci.
                       </CardDescription>
                     </CardHeader>
                     <CardContent>

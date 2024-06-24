@@ -52,7 +52,7 @@ async function getDashboard(req: NextApiRequest, res: NextApiResponse) {
             }
         })
 
-        const totalsubscriptions = await prisma.rendezVous.count({
+        const totalSubcriptions = await prisma.rendezVous.count({
             where: {
                 AND: [
                     {
@@ -68,7 +68,7 @@ async function getDashboard(req: NextApiRequest, res: NextApiResponse) {
             }
         })
 
-        const lastTotalsubscriptions = await prisma.rendezVous.count({
+        const lastTotalSubscriptions = await prisma.rendezVous.count({
             where: {
                 AND: [
                     {
@@ -83,6 +83,59 @@ async function getDashboard(req: NextApiRequest, res: NextApiResponse) {
                 ]
             }
         })
+
+        const totalSubscriptionsComing = await prisma.rendezVous.count({
+            where: {
+                AND: [
+                    {
+                        professionelId: id as string
+                    },
+                    {
+                        etat: "A_VENIR"
+                    }
+                ]
+            }
+        })
+
+        const totalSubscriptionsCancelled = await prisma.rendezVous.count({
+            where: {
+                AND: [
+                    {
+                        professionelId: id as string
+                    },
+                    {
+                        etat: "ANNULE"
+                    },
+                    {
+                        createdAt: {
+                            gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+                            lt: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)
+                        }
+                    }
+                ]
+            }
+        })
+
+        const lastTotalSubscriptionsCancelled  = await prisma.rendezVous.count({
+            where: {
+                AND: [
+                    {
+                        professionelId: id as string
+                    },
+                    {
+                        etat: "ANNULE"
+                    },
+                    {
+                        createdAt: {
+                            gte: new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1),
+                            lt: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+                        }
+                    }
+                ]
+            }
+        })
+
+
 
         var overview = [] as number[];
 
@@ -111,8 +164,11 @@ async function getDashboard(req: NextApiRequest, res: NextApiResponse) {
         res.status(200).json({
             "totalRevenus": totalRevenus,
             "lastTotalRevenus": lastTotalRevenus,
-            "totalSubscriptions": totalsubscriptions,
-            "lastTotalSubscriptions": lastTotalsubscriptions,
+            "totalSubscriptions": totalSubcriptions,
+            "lastTotalSubscriptions": lastTotalSubscriptions,
+            "totalSubscriptionsComing": totalSubscriptionsComing,
+            "totalSubscriptionsCancelled": totalSubscriptionsCancelled,
+            "lastTotalSubscriptionsCancelled": lastTotalSubscriptionsCancelled,
             "overview": overview
         });
     } catch (error) {
