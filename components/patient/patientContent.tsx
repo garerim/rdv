@@ -143,7 +143,7 @@ const PatientContent: React.FC<PatientContentProps> = ({ patient, antecedents, s
           <p className="text-gray-600">
             {patient.sexe === 'H' ? 'Masculin' : 'Féminin'} |{' '}
             {patient.birthDate
-              ? new Date(patient.birthDate).toLocaleDateString('en-US', {
+              ? new Date(patient.birthDate).toLocaleDateString('fr-FR', {
                   year: 'numeric',
                   month: 'short',
                   day: 'numeric',

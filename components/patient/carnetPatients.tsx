@@ -42,7 +42,7 @@ export type Patient = {
   id: string;
   firstName: string;
   lastName: string;
-  dateOfBirth: string;
+  birthDate: Date;
   email: string;
 };
 
@@ -79,8 +79,17 @@ export const columns: ColumnDef<Patient>[] = [
     header: "Nom de Famille",
   },
   {
-    accessorKey: "dateOfBirth",
+    accessorKey: "birthDate",
     header: "Date de naissance",
+    cell: ({ row }) => (
+      row.original.birthDate
+        ? new Date(row.original.birthDate).toLocaleDateString('fr-FR', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+          })
+        : 'Date de naissance inconnue'
+    ),
   },
   {
     accessorKey: "email",
@@ -111,11 +120,6 @@ export const columns: ColumnDef<Patient>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(patient.id)}
-            >
-              Copy patient ID
-            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>Voir détails patients</DropdownMenuItem>
           </DropdownMenuContent>
@@ -174,7 +178,7 @@ export function CarnetPatient() {
     <div className="w-full">
       <div className="flex items-center py-4 space-x-4">
         <Input
-          placeholder="Filter first name..."
+          placeholder="Filtre prénom..."
           value={(table.getColumn("firstName")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("firstName")?.setFilterValue(event.target.value)
@@ -182,7 +186,7 @@ export function CarnetPatient() {
           className="max-w-sm"
         />
         <Input
-          placeholder="Filter last name..."
+          placeholder="Filtre nom de famille..."
           value={(table.getColumn("lastName")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("lastName")?.setFilterValue(event.target.value)
@@ -190,10 +194,10 @@ export function CarnetPatient() {
           className="max-w-sm"
         />
         <Input
-          placeholder="Filter date of birth..."
-          value={(table.getColumn("dateOfBirth")?.getFilterValue() as string) ?? ""}
+          placeholder="Filtre date de naissance..."
+          value={(table.getColumn("birthDate")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("dateOfBirth")?.setFilterValue(event.target.value)
+            table.getColumn("birthDate")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
@@ -277,7 +281,7 @@ export function CarnetPatient() {
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          {table.getFilteredRowModel().rows.length} ligne(s) selectionée(s).
         </div>
         <div className="space-x-2">
           <Button
