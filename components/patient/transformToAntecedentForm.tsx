@@ -22,7 +22,7 @@ const TransformToAntecedentDialog: React.FC<TransformToAntecedentDialogProps> = 
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Choisir un type d'antécédent</DialogTitle>
+          <DialogTitle>{"Choisir un type d'antécédent"}</DialogTitle>
         </DialogHeader>
         <DialogDescription>
           <select value={selectedType} onChange={(e) => setSelectedType(e.target.value as AntecedentType)} className="w-full p-2 border rounded">

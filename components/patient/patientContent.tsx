@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import AntecedentFormDialog from './antecedentForm';
 import TransformToAntecedentDialog from './transformToAntecedentForm';
 import { UserProfile } from '@prisma/client';
+import Image from 'next/image';
 
 type SuiviPatient = {
   id: string;
@@ -126,7 +127,7 @@ const PatientContent: React.FC<PatientContentProps> = ({ patient, antecedents, s
       <div className="p-4 flex items-center border-b">
         <div className="w-16 h-16 bg-gray-300 rounded-full overflow-hidden flex items-center justify-center mr-4">
           {patient.avatar ? (
-            <img
+            <Image
               src={patient.avatar}
               alt={`${patient.firstName} ${patient.lastName}'s avatar`}
               className="w-full h-full object-cover"

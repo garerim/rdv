@@ -31,12 +31,12 @@ const OpenFolder: React.FC = () => {
 
   const resizeImage = (dataUrl: string): Promise<string> => {
     return new Promise((resolve) => {
-      const img = new Image();
+      const img: HTMLImageElement = new Image(120, 120);
       img.onload = () => {
         const canvas = document.createElement('canvas');
         let width = img.width;
         let height = img.height;
-
+  
         if (width > height) {
           if (width > 160) {
             height *= 160 / width;
@@ -48,7 +48,7 @@ const OpenFolder: React.FC = () => {
             height = 160;
           }
         }
-
+  
         canvas.width = width;
         canvas.height = height;
         const ctx = canvas.getContext('2d');
@@ -58,6 +58,7 @@ const OpenFolder: React.FC = () => {
       img.src = dataUrl;
     });
   };
+  
 
   const handleDownloadFile = (content: string, fileName: string) => {
     const element = document.createElement("a");
@@ -76,7 +77,7 @@ const OpenFolder: React.FC = () => {
         {files.map((file, index) => (
           <li key={index}>
             <h3>{file.name}</h3>
-            {file.content ? <img src={String(file.content)} alt={file.name} /> : null}
+            {file.content ? <img src={String(file.content)} alt={file.name} width={160} height={160} /> : null}
             {file.content ? String(file.content) : null}
             {file.content ? (
               <button onClick={() => handleDownloadFile(String(file.content), "carre.txt")}>

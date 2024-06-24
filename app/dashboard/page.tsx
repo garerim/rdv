@@ -145,7 +145,7 @@ export default function Dashboard() {
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
                   <Card className="col-span-4">
                     <CardHeader>
-                      <CardTitle>Vue d'ensemble</CardTitle>
+                      <CardTitle>{"Vue d'ensemble"}</CardTitle>
                     </CardHeader>
                     <CardContent className="pl-2">
                       <Overview user={user} overviewData={dashboardData.overview} />
