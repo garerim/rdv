@@ -39,7 +39,7 @@ export function RecentSales({ handleCountSale }: RecentSalesProps) {
       setUser(data)
       // console.log(data);
 
-      const rdvs = fetch(`/api/rdvByUser?id=${data.id}`, {
+      const rdvs = fetch(`/api/rdvWithUserByUser?id=${data.id}`, {
         method: "GET",
       });
 
