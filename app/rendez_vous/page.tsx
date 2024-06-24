@@ -88,7 +88,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { fr } from "date-fns/locale";import CheckoutButton from "@/components/checkout/index";
+import { fr } from "date-fns/locale";
+import CheckoutButton from "@/components/checkout/index";
 import { useRouter } from 'next/navigation';
 import { Amarante } from 'next/font/google';
 
@@ -506,7 +507,7 @@ export default function Page() {
         startDate: selectedRdv,
         duration: 30,
         typeRendezVous: selectedType,
-        description: selectedDescription,
+        description: "rendez vous",
         prix: 25,
       }),
     });
@@ -522,7 +523,7 @@ export default function Page() {
         startDate: selectedRdv,
         duration: 30,
         typeRendezVous: selectedType,
-        description: selectedDescription,
+        description: "rendez vous",
         prix: 25,
       }),
     });
@@ -890,7 +891,7 @@ export default function Page() {
                                     Confirmer
                                   </AlertDialogAction>*/}
                           <CheckoutButton
-                            amount={prices[value]}
+                            amount={prices[selectedType] as unknown as number}
                             description={selectedDescription}
                             doc={selectedDoc}
                             selectedTime={selectedRdv}
@@ -996,9 +997,13 @@ export default function Page() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {/*{filteredRdvs?.map((rdv) => (
-              <LigneTableauListRDVUser key={rdv.id} rdv={rdv} />
-            ))}*/}
+          {filteredRdvs !== undefined ? (
+              filteredRdvs?.map((rdv) => (
+                <LigneTableauListRDVUser key={rdv.id} rdv={rdv} />
+              ))
+            ) : (
+              <div>Vide</div>
+            )}
           </TableBody>
         </Table>
       </div>

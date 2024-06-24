@@ -8,6 +8,7 @@ import { isTokenExpired } from "@/lib/utils";
 import NotConnected from "@/components/notConnected/NotConnected";
 import { v4 as uuidv4 } from 'uuid';
 import { DateTime } from 'luxon';
+import { Button } from '../ui/button';
 
 const TVA = 0.2;
 
@@ -101,7 +102,7 @@ const CheckoutButton : React.FC<CheckoutButtonProps> = ({ amount, description, d
         prixAvantTVA: amount-amount*TVA,
         TVA: TVA,
         prixFinal: amount,
-        contenu: type === "consultation" ? `Consultation avec ${user?.prenom} ${user?.nom} le ${selectedTime}` : `Examen avec ${user?.prenom} ${user?.nom} le ${selectedTime}`,
+        contenu: type === "CONSULTATION" ? `Consultation avec ${user?.prenom} ${user?.nom} le ${selectedTime}` : `Examen avec ${user?.prenom} ${user?.nom} le ${selectedTime}`,
         description: description,
       });
 
@@ -167,12 +168,11 @@ const CheckoutButton : React.FC<CheckoutButtonProps> = ({ amount, description, d
   };
 
   return (
-    <button
+    <Button
       onClick={handleCheckout}
-      className="bg-blue-700 hover:bg-blue-800 duration-200 px-4 rounded-lg text-white"
     >
       Payer {amount}€
-    </button>
+    </Button>
   );
 };
 
